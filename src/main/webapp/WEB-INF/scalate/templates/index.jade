@@ -1,0 +1,7 @@
+-@ val pages: List[String]
+- attributes("title") = "NLP Web"
+- attributes("headline") = "NLP Web"
+
+- for (page <- pages)
+  p
+    a(href="#{context.contextPath}/#{page}")= page

@@ -1,0 +1,22 @@
+-@ val name: String
+-@ val info: String
+-@ val text: String
+-@ val config: String
+-@ val stats: String
+-@ val result: String
+
+- attributes("title") = name
+- attributes("headline") = name
+
+form(method="POST")
+  p= info
+  textarea(name="text" style="width: 600px" rows="20") #{text}
+  br
+  != config
+  input(type="submit" value="Submit")
+br
+p
+  pre
+    !~~stats
+pre 
+!~~ result

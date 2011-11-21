@@ -1,0 +1,119 @@
+-@ val title: String
+-@ val headline: String = title
+-@ val body: String
+- import scala.collection.SortedMap
+
+- 
+  var tools: SortedMap[String, List[(String, String)]] = SortedMap()
+  tools += ("Chunker" -> List(
+      ("OpenNLP", "/chunker/opennlp/")
+  ))
+
+  tools += ("Extraction" -> List(
+      ("ReVerb", "/extractor/reverb/"),
+      ("Relnoun", "/extractor/relnoun/"),
+      ("R2A2", "/extractor/r2a2"),
+      ("All", "/extractor/all")
+  ))
+
+  tools += ("Constituency Parser" -> List(
+      ("OpenNLP", "/constituency/opennlp"),
+      ("Stanford", "/constituency/stanford")
+  ))
+
+  tools += ("Dependency Parser" -> List(
+      ("Malt", "/parser/malt/"),
+      ("Stanford", "/parser/stanford"),
+      ("Deserialize", "/parser/deserialize/")
+  ))
+
+  tools += ("POS Tagger" -> List(
+      ("OpenNLP", "/postagger/opennlp"),
+      ("Stanford", "/postagger/stanford")
+  ))
+
+  tools += ("Sentencer" -> List(
+      ("OpenNLP", "/sentencer/opennlp"),
+      ("Piao", "/sentencer/piao")
+  ))
+
+  tools += ("Stemmer" -> List(
+      ("Lovins", "/stemmer/lovins"),
+      ("Morpha", "/stemmer/morpha"),
+      ("Paice", "/stemmer/paice"),
+      ("Porter", "/stemmer/porter")
+  ))
+
+  tools += ("Tokenizer" -> List(
+      ("OpenNLP", "/tokenizer/opennlp"),
+      ("Stanford", "/tokenizer/stanford")
+  ))
+
+  tools += ("Coreference" -> List(
+      ("Stanford", "/coref/stanford")
+  ))
+
+  tools += ("Other" -> List(
+      ("DOT-ter", "/dotter/")
+  ))
+
+!!!
+html
+  head
+    title= title
+    :css
+      .head {
+        font-weight: bold;
+        width: 150px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: lightgrey;
+        padding: 4px;
+        margin-bottom: 2px;
+      }
+      .item {
+        width: 144px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: lightgrey;
+        padding: 4px;
+        padding-left: 10px;
+        margin-bottom: 2px;
+      }
+      table {
+        border-width: 1px;
+        border-spacing: 0px;
+        border-style: outset;
+        border-color: gray;
+        border-collapse: collapse;
+        background-color: white;
+      }
+      th {
+        border-width: 1px;
+        padding: 4px;
+        border-style: inset;
+        border-color: gray;
+        background-color: PowderBlue;
+        -moz-border-radius: 0px 0px 0px 0px;
+      }
+      td {
+        border-width: 1px;
+        padding: 4px;
+        border-style: inset;
+        border-color: gray;
+        background-color: white;
+        -moz-border-radius: 0px 0px 0px 0px;
+      }
+  body 
+    div(style="width: 800px;")
+      div(style="width: 200px; float: left;")
+        - for ((category, tools) <- tools)
+          .head= category
+          - for ((tool, url) <- tools)
+            .item
+              a(href="#{context.contextPath}#{url}") #{tool}
+        -#
+      div(style="width: 600px; float: right;")
+        #content
+          h1= headline
+          !~~ body
