@@ -4,7 +4,7 @@ import org.scalatra._
 import scalate.ScalateSupport
 import java.net.URL
 
-import collection.JavaConversions._
+import scala.collection.JavaConversions._
 
 import org.apache.commons.io.IOUtils
 
