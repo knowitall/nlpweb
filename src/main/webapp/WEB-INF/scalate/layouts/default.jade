@@ -6,12 +6,12 @@
 - 
   var tools: SortedMap[String, List[(String, String)]] = SortedMap()
   tools += ("Chunker" -> List(
-      ("OpenNLP", "/chunker/opennlp/")
+      ("OpenNLP", "/chunker/opennlp")
   ))
 
   tools += ("Extraction" -> List(
-      ("ReVerb", "/extractor/reverb/"),
-      ("Relnoun", "/extractor/relnoun/"),
+      ("ReVerb", "/extractor/reverb"),
+      ("Relnoun", "/extractor/relnoun"),
       ("R2A2", "/extractor/r2a2"),
       ("All", "/extractor/all")
   ))
@@ -22,9 +22,9 @@
   ))
 
   tools += ("Dependency Parser" -> List(
-      ("Malt", "/parser/malt/"),
+      ("Malt", "/parser/malt"),
       ("Stanford", "/parser/stanford"),
-      ("Deserialize", "/parser/deserialize/")
+      ("Deserialize", "/parser/deserialize")
   ))
 
   tools += ("POS Tagger" -> List(
@@ -49,12 +49,8 @@
       ("Stanford", "/tokenizer/stanford")
   ))
 
-  tools += ("Coreference" -> List(
-      ("Stanford", "/coref/stanford")
-  ))
-
   tools += ("Other" -> List(
-      ("DOT-ter", "/dotter/")
+      ("DOT-ter", "/dotter")
   ))
 
 !!!
@@ -111,7 +107,7 @@ html
           .head= category
           - for ((tool, url) <- tools)
             .item
-              a(href="#{context.contextPath}#{url}") #{tool}
+              a(href="#{context.contextPath}#{url}/") #{tool}
         -#
       div(style="width: 600px; float: right;")
         #content

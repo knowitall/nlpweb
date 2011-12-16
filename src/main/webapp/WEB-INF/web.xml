@@ -19,12 +19,14 @@
 		</filter-class>
 	</filter>
 
+<!-- This Filter uses too much memory for daily use
 	<filter>
 		<filter-name>coref</filter-name>
 		<filter-class>
 			edu.washington.cs.knowitall.nlpweb.CoreferenceFilter
 		</filter-class>
 	</filter>
+-->
 
 	<filter>
 		<filter-name>constituency</filter-name>
