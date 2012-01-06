@@ -66,7 +66,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
     }
     
     if (params.getOrElse("collapseNounGroups", "") == "true") {
-      graph = graph.collapseNounGroups
+      graph = graph.collapseNounGroups()
     }
 
     if (params.getOrElse("collapsePrepOf", "") == "true") {
