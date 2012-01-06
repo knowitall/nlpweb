@@ -20,12 +20,12 @@ import edu.washington.cs.knowitall.nlpweb.Common._
 import edu.washington.cs.knowitall.Sentence
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
-import edu.washington.cs.knowitall.stemmer.{Stemmer, MorphaStemmer, PorterStemmer}
+import edu.washington.cs.knowitall.stemmer.{ Stemmer, MorphaStemmer, PorterStemmer }
 import edu.washington.cs.knowitall.extractor._
 import edu.washington.cs.knowitall.nlp.extraction._
 import edu.washington.cs.knowitall.nlp.ChunkedSentence
 
-class ExtractorFilter extends ToolFilter("extractor", List("reverb", "nesty", "r2a2", "relnoun", "all")) {
+class ExtractorFilter extends ToolFilter("extractor", List("nesty", "r2a2", "relnoun", "reverb")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceChunker = new OpenNlpSentenceChunker()
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
@@ -33,35 +33,55 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "nesty", "r
   lazy val reverbExtractor = new ReVerbExtractor()
   lazy val nestyExtractor = new BinaryNestedExtractor()
   lazy val r2a2Extractor = new R2A2()
-  lazy val relnounExtractor =  new RelationalNounExtractor()
-  lazy val omniExtractor = new OmniExtractor()
+  lazy val relnounExtractor = new RelationalNounExtractor()
 
   implicit def sentence2chunkedSentence(sentence: Sentence): ChunkedSentence = sentence.toChunkedSentence
 
-  def getExtractor(name: String): Sentence=>Iterable[Any] = {
-    s: Sentence => name match {
-      case "reverb" => reverbExtractor.extract(s)
-      case "nesty" => nestyExtractor.extract(s)
-      case "r2a2" => r2a2Extractor.extract(s)
-      case "relnoun" => relnounExtractor.extract(s)
-      case "all" => omniExtractor.extract(s)
-    }
+  def getExtractor(name: String): Sentence => List[(String, Iterable[(String, String, String)])] = {
+    def triple(extr: ChunkedBinaryExtraction) =
+      (extr.getArgument1.getText, extr.getRelation.getText, extr.getArgument2.getText)
+    s: Sentence => List((name, name match {
+      case "reverb" => reverbExtractor.extract(s).map(triple(_))
+      case "nesty" => nestyExtractor.extract(s).map(triple(_))
+      case "r2a2" => r2a2Extractor.extract(s).map(triple(_))
+      case "relnoun" => relnounExtractor.extract(s).map(triple(_))
+    }))
+  }
+  
+  override def config(params: Map[String, String]): String = {
+    val currentExtractor = params("extractor")
+    (for (extractor <- this.tools) yield {
+      "<input name=\"check_"+extractor+"\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || params.get("check_" + extractor) == Some("true")) """checked="true" """ else "") + " /> "+extractor+"<br />"
+    }).mkString("\n")
   }
 
   override def doPost(params: Map[String, String]) = {
     def chunk(string: String) = sentenceChunker.synchronized {
-      sentenceDetector.sentDetect(string).map { 
+      sentenceDetector.sentDetect(string).map {
         string => new Sentence(sentenceChunker.chunkSentence(string), string)
       }
     }
+    
+    def buildTable(extractions: (String, Iterable[(String, String, String)])) = {
+      "<table><tr><th colspan=\"3\">"+extractions._1 + " extractions"+"</th></tr>" + extractions._2.map { extr => 
+        "<tr><td>"+extr._1+"</td><td>"+extr._2+"</td><td>"+extr._3+"</td></tr>"
+      }.mkString("\n")+"</table><br/><br/>"
+    }
 
-    val extractor = getExtractor(params("extractor"))
+    val extractorName = params("extractor")
     val text = params("text")
+    
+    // create an extractor that extracts for all checked extractors
+    def extractor(sentence: Sentence) = 
+      for { 
+        key <- params.keys; if key.startsWith("check_") 
+        extrs <- getExtractor(key.drop(6))(sentence)
+      } yield (extrs)
 
     val (chunkTime, chunked) = timed(chunk(text))
     val (extractionTime, extractions) = timed(chunked.flatMap(extractor(_)))
     ("chunking: " + Timing.format(chunkTime) + "\n" +
       "extracting: " + Timing.format(extractionTime),
-      "<pre>" + extractions.size + " extraction(s)\n" + extractions.mkString("\n") + "</pre>")
+      "<p>" + extractions.map(_._2).flatten.size + " extraction(s):</p>" + extractions.map(buildTable(_)).mkString("\n"))
   }
 }
