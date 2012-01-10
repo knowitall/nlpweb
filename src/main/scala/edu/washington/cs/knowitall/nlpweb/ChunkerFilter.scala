@@ -14,7 +14,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import nlpweb.Common._
 import tool.chunk._
 
 class ChunkerFilter extends ToolFilter("chunker", List("opennlp")) {
@@ -32,9 +31,9 @@ class ChunkerFilter extends ToolFilter("chunker", List("opennlp")) {
     val text = params("text")
 
     val lines = text.split("\n")
-    val (chunkTime, chunkeds) = timed(lines.map(chunker.chunk(_)))
+    val (chunkTime, chunkeds) = Timing.time(lines.map(chunker.chunk(_)))
     var colored = false
-    ("time: " + Timing.format(chunkTime),
+    ("time: " + Timing.Milliseconds.format(chunkTime),
     chunkeds.map { 
       chunked => buildColoredTable(List("strings", "postags", "chunks"), 
         chunked.map { 

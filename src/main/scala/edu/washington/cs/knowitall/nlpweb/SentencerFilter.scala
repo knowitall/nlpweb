@@ -16,8 +16,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 class SentencerFilter extends ToolFilter("sentencer", List("opennlp", "piao")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
 
@@ -29,8 +27,8 @@ class SentencerFilter extends ToolFilter("sentencer", List("opennlp", "piao")) {
     val sentencer = sentencers(params("sentencer"))
     val text = params("text")
 
-    val (sentencerTime, sentenced) = timed(sentencer.sentences(text))
-    ("time: " + Timing.format(sentencerTime),
+    val (sentencerTime, sentenced) = Timing.time(sentencer.sentences(text))
+    ("time: " + Timing.Milliseconds.format(sentencerTime),
     sentenced.map("<li>" + _).mkString("<ol>\n", "\n", "</ol>"))
   }
 }

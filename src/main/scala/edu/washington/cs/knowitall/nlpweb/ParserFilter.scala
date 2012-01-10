@@ -15,8 +15,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 import edu.washington.cs.knowitall.tool.parse._
 import edu.washington.cs.knowitall.tool.parse.pattern._
 import edu.washington.cs.knowitall.tool.parse.graph._
@@ -55,7 +53,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
     val input = params("text")
     val pattern = params("pattern")
     var (parseTime, graph) = parser.synchronized {
-      timed(
+      Timing.time(
         parser match {
           case parser: BaseStanfordParser =>
             // if it's a StanfordBaseParser consider doing ccCompressed
@@ -91,7 +89,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
       .replaceAll("\"", """%22""")
       .replaceAll(" ", "%20")
 
-    ("parse time: " + Timing.format(parseTime),
+    ("parse time: " + Timing.Milliseconds.format(parseTime),
       "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" /><br><pre>dependencies: " + Dependencies.serialize(graph.dependencies) + "\n\n" + rawDot + "</pre>")
   }
 }

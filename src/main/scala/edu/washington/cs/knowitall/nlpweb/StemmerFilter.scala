@@ -14,8 +14,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 import edu.washington.cs.knowitall.Sentence
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker

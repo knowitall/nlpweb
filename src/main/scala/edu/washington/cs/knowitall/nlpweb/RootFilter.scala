@@ -12,8 +12,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 object RootFilter {
   lazy val dotFormats = {
     val target = "Use one of:"

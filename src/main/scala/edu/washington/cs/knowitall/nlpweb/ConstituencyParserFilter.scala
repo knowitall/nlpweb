@@ -15,8 +15,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 import edu.washington.cs.knowitall.Sentence
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.stemmer.{Stemmer, MorphaStemmer, PorterStemmer}
@@ -39,7 +37,7 @@ class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford
     val parser = getParser(params("constituency"))
     val input = params("text")
     var (parseTime, graph) = parser.synchronized {
-      timed(parser.parse(input))
+      Timing.time(parser.parse(input))
     }
 
     val buffer = new StringBuffer()
@@ -49,7 +47,7 @@ class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford
       .replaceAll("""\s+""", " ")
       .replaceAll("\"", """%22""")
 
-    ("parse time: " + Timing.format(parseTime),
+    ("parse time: " + Timing.Milliseconds.format(parseTime),
      "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" />")
   }
 }

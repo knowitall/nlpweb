@@ -15,8 +15,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 import edu.washington.cs.knowitall.Sentence
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
@@ -78,10 +76,10 @@ class ExtractorFilter extends ToolFilter("extractor", List("nesty", "r2a2", "rel
         extrs <- getExtractor(key.drop(6))(sentence)
       } yield (extrs)
 
-    val (chunkTime, chunked) = timed(chunk(text))
-    val (extractionTime, extractions) = timed(chunked.flatMap(extractor(_)))
-    ("chunking: " + Timing.format(chunkTime) + "\n" +
-      "extracting: " + Timing.format(extractionTime),
+    val (chunkTime, chunked) = Timing.time(chunk(text))
+    val (extractionTime, extractions) = Timing.time(chunked.flatMap(extractor(_)))
+    ("chunking: " + Timing.Milliseconds.format(chunkTime) + "\n" +
+      "extracting: " + Timing.Milliseconds.format(extractionTime),
       "<p>" + extractions.map(_._2).flatten.size + " extraction(s):</p>" + extractions.map(buildTable(_)).mkString("\n"))
   }
 }

@@ -16,8 +16,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 class PosTaggerFilter extends ToolFilter("postagger", List("opennlp", "stanford")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
   lazy val postaggers = Map(
@@ -29,8 +27,8 @@ class PosTaggerFilter extends ToolFilter("postagger", List("opennlp", "stanford"
     val text = params("text")
 
     val lines = text.split("\n")
-    val (postagTime, postaggeds) = timed(lines.map(postagger.postag(_)))
-    ("time: " + Timing.format(postagTime),
+    val (postagTime, postaggeds) = Timing.time(lines.map(postagger.postag(_)))
+    ("time: " + Timing.Milliseconds.format(postagTime),
       postaggeds.map { 
         postagged => buildTable(List("string", "postag"), postagged.map { case (string, postag) => List(string, postag) })
       }.mkString("<br>\n"))

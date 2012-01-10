@@ -16,8 +16,6 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-import edu.washington.cs.knowitall.nlpweb.Common._
-
 class TokenizerFilter extends ToolFilter("tokenizer", List("stanford", "opennlp")) {
   override val info = "Enter sentences to be tokenized, one per line."
   lazy val tokenizers = Map(
@@ -29,8 +27,8 @@ class TokenizerFilter extends ToolFilter("tokenizer", List("stanford", "opennlp"
     val text = params("text")
 
     val lines = text.split("\n")
-    val (tokenizeTime, tokenized) = timed(lines.map(tokenizer.tokenize(_)))
-    ("time: " + Timing.format(tokenizeTime),
+    val (tokenizeTime, tokenized) = Timing.time(lines.map(tokenizer.tokenize(_)))
+    ("time: " + Timing.Milliseconds.format(tokenizeTime),
         tokenized.map(_.mkString(" ")).mkString("\n"))
   }
 }

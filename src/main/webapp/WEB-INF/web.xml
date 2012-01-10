@@ -122,8 +122,10 @@
         <url-pattern>/chunker/*</url-pattern>
 	</filter-mapping>
 
+<!--
 	<filter-mapping>
 		<filter-name>coref</filter-name>
         <url-pattern>/coref/*</url-pattern>
 	</filter-mapping>
+-->
 </web-app>
