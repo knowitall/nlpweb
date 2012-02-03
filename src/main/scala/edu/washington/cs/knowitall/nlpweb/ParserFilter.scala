@@ -2,29 +2,31 @@ package edu.washington.cs.knowitall
 package nlpweb
 
 import common._
-
 import org.scalatra._
 import java.net.URL
 import scalate.ScalateSupport
-
 import scala.collection.JavaConversions._
-
 import org.apache.commons.io.IOUtils
-
 import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
-
 import edu.washington.cs.knowitall.tool.parse._
 import edu.washington.cs.knowitall.tool.parse.pattern._
 import edu.washington.cs.knowitall.tool.parse.graph._
+import edu.washington.cs.knowitall.tool.parse.BaseStanfordParser._
 
 class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deserialize")) {
   override val info = "Enter a single sentence to be parsed."
 
   lazy val stanfordParser = new StanfordParser()
   lazy val maltParser = new MaltParser("engmalt.poly.mco")
-  lazy val deserializeParser = new DeserializeDependencyParser()
+  lazy val deserializeParser = new DependencyParser {
+    override def dependencyGraph(pickled: String) = 
+      DependencyGraph.deserialize(pickled)
+      
+    override def dependencies(pickled: String) =
+      DependencyGraph.deserialize(pickled).dependencies
+  }
 
   val parsers = tools
   def getParser(parser: String): DependencyParser =
@@ -57,7 +59,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
         parser match {
           case parser: BaseStanfordParser =>
             // if it's a StanfordBaseParser consider doing ccCompressed
-            parser.dependencyGraph(input, params.getOrElse("ccCompressed", "") == "true")
+            parser.dependencyGraph(input, if (params.getOrElse("ccCompressed", "") == "true") CCCompressed else None)
           case parser: DependencyParser =>
             parser.dependencyGraph(input)
         })
@@ -90,6 +92,6 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
       .replaceAll(" ", "%20")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-      "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" /><br><pre>dependencies: " + Dependencies.serialize(graph.dependencies) + "\n\n" + rawDot + "</pre>")
+      "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + rawDot + "</pre>")
   }
 }
