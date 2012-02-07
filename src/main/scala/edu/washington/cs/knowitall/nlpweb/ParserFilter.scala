@@ -41,13 +41,15 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
       params.get("pattern"),
       params.keys.contains("ccCompressed"),
       params.keys.contains("collapseNounGroups"),
-      params.keys.contains("collapsePrepOf"))
+      params.keys.contains("collapsePrepOf"),
+      params.keys.contains("collapseWeakLeaves"))
 
-  def config(pattern: Option[String], ccCompressed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean): String = """
+  def config(pattern: Option[String], ccCompressed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
     pattern: <input name="pattern" type="input" size="60" value="""" + pattern.getOrElse("") + """" /><br />
-    <input name="ccCompressed" type="checkbox" value="true" """ + (if (ccCompressed) """checked="true" """ else "") + """ /> CC Compressed<br />
-    <input name="collapseNounGroups" type="checkbox" value="true" """ + (if (collapseNounGroups) """checked="true" """ else "") + """/> Collapse Noun Groups<br />
-    <input name="collapsePrepOf" type="checkbox" value="true" """ + (if (collapsePrepOf) """checked="true" """ else "") + """/> Collapse Prep Of<br />
+    <input name="ccCompressed" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """ /> CC Compressed<br />
+    <input name="collapseNounGroups" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Noun Groups<br />
+    <input name="collapsePrepOf" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Prep Of<br />
+    <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
   override def doPost(params: Map[String, String]) = {
@@ -71,6 +73,10 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
 
     if (params.getOrElse("collapsePrepOf", "") == "true") {
       graph = graph.collapseNNPOf
+    }
+
+    if (params.getOrElse("collapseWeakLeaves", "") == "true") {
+      graph = graph.collapseWeakLeaves
     }
 
     val (nodes, edges) = if (!params.get("pattern").map(_.isEmpty).getOrElse(false)) {
