@@ -88,7 +88,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
     else (List(), List())
 
     val buffer = new StringBuffer()
-    graph.printDOT(buffer, Some(if (input.length > 100) input.substring(0, 100) + "..." else input), nodes.toSet, edges.toSet)
+    graph.printDotWithHighlights(buffer, if (input.length > 100) input.substring(0, 100) + "..." else input, nodes.toSet, edges.toSet)
     val rawDot = buffer.toString
     val dot = rawDot
       .replaceAll("\n", " ")
