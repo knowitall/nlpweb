@@ -15,11 +15,11 @@ import edu.washington.cs.knowitall.tool.parse.pattern._
 import edu.washington.cs.knowitall.tool.parse.graph._
 import edu.washington.cs.knowitall.tool.parse.BaseStanfordParser._
 
-class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deserialize")) {
+class ParserFilter extends ToolFilter("parser", List("stanford", "deserialize")) {
   override val info = "Enter a single sentence to be parsed."
 
   lazy val stanfordParser = new StanfordParser()
-  lazy val maltParser = new MaltParser("engmalt.poly.mco")
+//  lazy val maltParser = new MaltParser()
   lazy val deserializeParser = new DependencyParser {
     override def dependencyGraph(pickled: String) = 
       DependencyGraph.deserialize(pickled)
@@ -32,7 +32,7 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "malt", "deseri
   def getParser(parser: String): DependencyParser =
     parser match {
       case "stanford" => stanfordParser
-      case "malt" => maltParser
+//      case "malt" => maltParser
       case "deserialize" => deserializeParser
     }
 
