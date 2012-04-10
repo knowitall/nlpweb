@@ -1,48 +1,72 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
+import scala.Array.canBuildFrom
+import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.io.Source
 
-import org.scalatra._
-import scalate.ScalateSupport
-import java.net.URL
-
-import scala.collection.JavaConversions._
-
-import org.apache.commons.io.IOUtils
-
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
-
-import edu.washington.cs.knowitall.Sentence
-import edu.washington.cs.knowitall.util.DefaultObjects
-import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
-import edu.washington.cs.knowitall.stemmer.{ Stemmer, MorphaStemmer, PorterStemmer }
-import edu.washington.cs.knowitall.extractor._
-import edu.washington.cs.knowitall.nlp.extraction._
+import common.Timing
+import edu.washington.cs.knowitall.common.Resource.using
+import edu.washington.cs.knowitall.extractor.BinaryNestedExtractor
+import edu.washington.cs.knowitall.extractor.R2A2
+import edu.washington.cs.knowitall.extractor.ReVerbExtractor
+import edu.washington.cs.knowitall.extractor.RelationalNounExtractor
+import edu.washington.cs.knowitall.nlp.extraction.ChunkedBinaryExtraction
 import edu.washington.cs.knowitall.nlp.ChunkedSentence
+import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
+import edu.washington.cs.knowitall.pattern.extract.TemplateExtractor
+import edu.washington.cs.knowitall.pattern.OpenParse
+import edu.washington.cs.knowitall.tool.parse.StanfordParser
+import edu.washington.cs.knowitall.util.DefaultObjects
+import edu.washington.cs.knowitall.Sentence
+import edu.washington.cs.knowitall.pattern
 
-class ExtractorFilter extends ToolFilter("extractor", List("nesty", "r2a2", "relnoun", "reverb")) {
+import edu.washington.cs.knowitall.argumentidentifier.ConfidenceMetric
+import edu.washington.cs.knowitall.extractor.conf.ReVerbConfFunction
+
+class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceChunker = new OpenNlpSentenceChunker()
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 
+  lazy val parser = new StanfordParser()
+  lazy val ollieExtractor = {
+    val extractors = using(this.getClass().getClassLoader().getResourceAsStream("templates.txt")) { is =>
+      using(Source.fromInputStream(is)) { source =>
+        TemplateExtractor.fromLines(source.getLines)
+      }
+    }
+    
+    val config = new OpenParse.Configuration(confidenceThreshold = 0.01)
+    new OpenParse(extractors, config)
+  }
   lazy val reverbExtractor = new ReVerbExtractor()
   lazy val nestyExtractor = new BinaryNestedExtractor()
   lazy val r2a2Extractor = new R2A2()
   lazy val relnounExtractor = new RelationalNounExtractor()
 
+  lazy val reverbConfidence = new ReVerbConfFunction()
+  lazy val r2a2Confidence = new ConfidenceMetric()
+
   implicit def sentence2chunkedSentence(sentence: Sentence): ChunkedSentence = sentence.toChunkedSentence
 
-  def getExtractor(name: String): Sentence => List[(String, Iterable[(String, String, String)])] = {
+  def getExtractor(name: String): Sentence => List[(String, Iterable[(Double, (String, String, String))])] = {
     def triple(extr: ChunkedBinaryExtraction) =
       (extr.getArgument1.getText, extr.getRelation.getText, extr.getArgument2.getText)
+    def tripleOpenParse(extr: pattern.extract.DetailedExtraction) =
+      (extr.arg1Text, extr.relText, extr.arg2Text)
     s: Sentence => List((name, name match {
-      case "reverb" => reverbExtractor.extract(s).map(triple(_))
-      case "nesty" => nestyExtractor.extract(s).map(triple(_))
-      case "r2a2" => r2a2Extractor.extract(s).map(triple(_))
-      case "relnoun" => relnounExtractor.extract(s).map(triple(_))
+      case "ollie" => ollieExtractor.extract(parser.dependencyGraph(s.originalText)).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
+      case "reverb" => 
+        val extrs: List[ChunkedBinaryExtraction] = reverbExtractor.extract(s).toList
+        val confs: List[Double] = extrs map reverbConfidence.getConf
+        confs zip (extrs.map(triple(_)))
+      case "nesty" => nestyExtractor.extract(s).map(ex => (0.5, triple(ex)))
+      case "r2a2" => 
+        val extrs: List[ChunkedBinaryExtraction] = r2a2Extractor.extract(s).toList
+        val confs: List[Double] = extrs map reverbConfidence.getConf
+        confs zip (extrs.map(triple(_)))
+      case "relnoun" => relnounExtractor.extract(s).map(ex => (0.5, triple(ex)))
     }))
   }
   
@@ -60,9 +84,9 @@ class ExtractorFilter extends ToolFilter("extractor", List("nesty", "r2a2", "rel
       }
     }
     
-    def buildTable(extractions: (String, Iterable[(String, String, String)])) = {
-      "<table><tr><th colspan=\"3\">"+extractions._1 + " extractions"+"</th></tr>" + extractions._2.map { extr => 
-        "<tr><td>"+extr._1+"</td><td>"+extr._2+"</td><td>"+extr._3+"</td></tr>"
+    def buildTable(extractions: (String, Iterable[(Double, (String, String, String))])) = {
+      "<table><tr><th colspan=\"4\">"+extractions._1 + " extractions"+"</th></tr>" + extractions._2.map { case (conf, (arg1, rel, arg2)) => 
+        "<tr><td>"+("%1.2f" format conf)+"</td><td>"+arg1+"</td><td>"+rel+"</td><td>"+arg2+"</td></tr>"
       }.mkString("\n")+"</table><br/><br/>"
     }
 
@@ -71,10 +95,10 @@ class ExtractorFilter extends ToolFilter("extractor", List("nesty", "r2a2", "rel
     
     // create an extractor that extracts for all checked extractors
     def extractor(sentence: Sentence) = 
-      for { 
+      (for { 
         key <- params.keys; if key.startsWith("check_") 
         extrs <- getExtractor(key.drop(6))(sentence)
-      } yield (extrs)
+      } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
     val (chunkTime, chunked) = Timing.time(chunk(text))
     val (extractionTime, extractions) = Timing.time(chunked.flatMap(extractor(_)))
