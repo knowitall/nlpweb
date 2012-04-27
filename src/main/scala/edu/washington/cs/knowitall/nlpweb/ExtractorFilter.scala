@@ -31,14 +31,8 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
 
   lazy val parser = new StanfordParser()
   lazy val ollieExtractor = {
-    val extractors = using(this.getClass().getClassLoader().getResourceAsStream("templates.txt")) { is =>
-      using(Source.fromInputStream(is)) { source =>
-        TemplateExtractor.fromLines(source.getLines)
-      }
-    }
-    
     val config = new OpenParse.Configuration(confidenceThreshold = 0.01)
-    new OpenParse(extractors, config)
+    OpenParse.fromModelUrl(OpenParse.defaultModelUrl, config)
   }
   lazy val reverbExtractor = new ReVerbExtractor()
   lazy val nestyExtractor = new BinaryNestedExtractor()
@@ -57,48 +51,48 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
       (extr.arg1Text, extr.relText, extr.arg2Text)
     s: Sentence => List((name, name match {
       case "ollie" => ollieExtractor.extract(parser.dependencyGraph(s.originalText)).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
-      case "reverb" => 
+      case "reverb" =>
         val extrs: List[ChunkedBinaryExtraction] = reverbExtractor.extract(s).toList
         val confs: List[Double] = extrs map reverbConfidence.getConf
         confs zip (extrs.map(triple(_)))
       case "nesty" => nestyExtractor.extract(s).map(ex => (0.5, triple(ex)))
-      case "r2a2" => 
+      case "r2a2" =>
         val extrs: List[ChunkedBinaryExtraction] = r2a2Extractor.extract(s).toList
         val confs: List[Double] = extrs map reverbConfidence.getConf
         confs zip (extrs.map(triple(_)))
       case "relnoun" => relnounExtractor.extract(s).map(ex => (0.5, triple(ex)))
     }))
   }
-  
+
   override def config(params: Map[String, String]): String = {
     val currentExtractor = params("extractor")
     (for (extractor <- this.tools) yield {
       "<input name=\"check_"+extractor+"\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || params.get("check_" + extractor) == Some("true")) """checked="true" """ else "") + " /> "+extractor+"<br />"
     }).mkString("\n")
   }
-  
+
   override def doPost(params: Map[String, String]) = {
 	case class ExtractionSet(sentence: String, extractions: Seq[(String, Iterable[(Double, (String, String, String))])])
-	
+
     def chunk(string: String) = sentenceChunker.synchronized {
       sentenceDetector.sentDetect(string).map {
         string => new Sentence(sentenceChunker.chunkSentence(string), string)
       }
     }
-    
+
     def buildTable(set: ExtractionSet) = {
-      "<table><tr><th colspan=\"4\">" + set.sentence + "</th></tr>" + set.extractions.map(extractions => "<tr><th colspan=\"4\">"+extractions._1 + " extractions"+"</th></tr>" + extractions._2.map { case (conf, (arg1, rel, arg2)) => 
+      "<table><tr><th colspan=\"4\">" + set.sentence + "</th></tr>" + set.extractions.map(extractions => "<tr><th colspan=\"4\">"+extractions._1 + " extractions"+"</th></tr>" + extractions._2.map { case (conf, (arg1, rel, arg2)) =>
         "<tr><td>"+("%1.2f" format conf)+"</td><td>"+arg1+"</td><td>"+rel+"</td><td>"+arg2+"</td></tr>"
       }.mkString("\n")).mkString("\n")+"</table><br/><br/>"
     }
 
     val extractorName = params("extractor")
     val text = params("text")
-    
+
     // create an extractor that extracts for all checked extractors
-    def extractor(sentence: Sentence) = 
-      (for { 
-        key <- params.keys; if key.startsWith("check_") 
+    def extractor(sentence: Sentence) =
+      (for {
+        key <- params.keys; if key.startsWith("check_")
         extrs <- getExtractor(key.drop(6))(sentence)
       } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
