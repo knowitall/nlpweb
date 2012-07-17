@@ -16,6 +16,8 @@ import edu.washington.cs.knowitall.nlp.ChunkedSentence
 import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
 import edu.washington.cs.knowitall.openparse.extract.TemplateExtractor
 import edu.washington.cs.knowitall.openparse.OpenParse
+import edu.washington.cs.knowitall.ollie.Ollie
+import edu.washington.cs.knowitall.ollie.confidence.OllieIndependentConfFunction
 import edu.washington.cs.knowitall.tool.parse.StanfordParser
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.Sentence
@@ -24,15 +26,18 @@ import edu.washington.cs.knowitall.openparse
 import edu.washington.cs.knowitall.argumentidentifier.ConfidenceMetric
 import edu.washington.cs.knowitall.extractor.conf.ReVerbIndependentConfFunction
 
-class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "ollie")) {
+class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceChunker = new OpenNlpSentenceChunker()
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 
   lazy val parser = new StanfordParser()
-  lazy val ollieExtractor = {
-    val config = new OpenParse.Configuration(confidenceThreshold = 0.01)
-    OpenParse.fromModelUrl(OpenParse.defaultModelUrl, config)
+
+  lazy val ollieExtractor = new Ollie()
+  lazy val ollieConfidence = OllieIndependentConfFunction.loadDefaultClassifier()
+
+  lazy val openparseExtractor = {
+    OpenParse.withDefaultModel()
   }
   lazy val reverbExtractor = new ReVerbExtractor()
   lazy val nestyExtractor = new BinaryNestedExtractor()
@@ -49,8 +54,15 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
       (extr.getArgument1.getText, extr.getRelation.getText, extr.getArgument2.getText)
     def tripleOpenParse(extr: openparse.extract.DetailedExtraction) =
       (extr.arg1Text, extr.relText, extr.arg2Text)
+    def tripleOllie(inst: ollie.OllieExtractionInstance) =
+      (inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
     s: Sentence => List((name, name match {
-      case "ollie" => ollieExtractor.extract(parser.dependencyGraph(s.originalText)).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
+      case "ollie" => {
+        val extrs = ollieExtractor.extract(parser.dependencyGraph(s.originalText)).toList
+        val confs = extrs map ollieConfidence.getConf
+        confs zip (extrs map tripleOllie)
+     }
+      case "openparse" => openparseExtractor.extract(parser.dependencyGraph(s.originalText)).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
       case "reverb" =>
         val extrs: List[ChunkedBinaryExtraction] = reverbExtractor.extract(s).toList
         val confs: List[Double] = extrs map reverbConfidence.getConf
