@@ -16,12 +16,11 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 
-class SentencerFilter extends ToolFilter("sentencer", List("opennlp", "piao")) {
+class SentencerFilter extends ToolFilter("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
 
   lazy val sentencers = Map(
-    "opennlp" -> new OpenNlpSentencer(),
-    "piao" -> new PiaoSentencer())
+    "opennlp" -> new OpenNlpSentencer())
 
   override def doPost(params: Map[String, String]) = {
     val sentencer = sentencers(params("sentencer"))

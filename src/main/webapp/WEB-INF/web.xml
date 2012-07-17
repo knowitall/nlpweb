@@ -66,7 +66,7 @@
 	<filter>
 		<filter-name>postagger</filter-name>
 		<filter-class>
-			edu.washington.cs.knowitall.nlpweb.PosTaggerFilter
+			edu.washington.cs.knowitall.nlpweb.PostaggerFilter
 		</filter-class>
 	</filter>
 

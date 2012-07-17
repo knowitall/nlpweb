@@ -37,7 +37,7 @@ class ChunkerFilter extends ToolFilter("chunker", List("opennlp")) {
     chunkeds.map { 
       chunked => buildColoredTable(List("strings", "postags", "chunks"), 
         chunked.map { 
-          case (string, (postag, chunk)) => if (chunk.startsWith("B")) colored = !colored; (Some(if (chunk.startsWith("O")) "pink" else if (colored) "lightgrey" else "white"), List(string, postag, chunk))
+          case ChunkedToken(chunk, postag, string, offset) => if (chunk.startsWith("B")) colored = !colored; (Some(if (chunk.startsWith("O")) "pink" else if (colored) "lightgrey" else "white"), List(string, postag, chunk))
         }) 
     }.mkString("<br>\n") )
   }

@@ -11,11 +11,11 @@ import java.net.URLEncoder
 import java.net.URLConnection
 import java.io.PrintWriter
 import edu.washington.cs.knowitall.tool.parse._
-import edu.washington.cs.knowitall.tool.parse.pattern._
 import edu.washington.cs.knowitall.tool.parse.graph._
 import edu.washington.cs.knowitall.tool.parse.BaseStanfordParser._
 
 class ParserFilter extends ToolFilter("parser", List("stanford", "deserialize")) {
+  import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
   override val info = "Enter a single sentence to be parsed."
 
   lazy val stanfordParser = new StanfordParser()

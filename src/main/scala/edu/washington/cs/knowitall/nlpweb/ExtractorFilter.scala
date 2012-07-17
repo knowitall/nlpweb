@@ -14,15 +14,15 @@ import edu.washington.cs.knowitall.extractor.RelationalNounExtractor
 import edu.washington.cs.knowitall.nlp.extraction.ChunkedBinaryExtraction
 import edu.washington.cs.knowitall.nlp.ChunkedSentence
 import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
-import edu.washington.cs.knowitall.pattern.extract.TemplateExtractor
-import edu.washington.cs.knowitall.pattern.OpenParse
+import edu.washington.cs.knowitall.openparse.extract.TemplateExtractor
+import edu.washington.cs.knowitall.openparse.OpenParse
 import edu.washington.cs.knowitall.tool.parse.StanfordParser
 import edu.washington.cs.knowitall.util.DefaultObjects
 import edu.washington.cs.knowitall.Sentence
-import edu.washington.cs.knowitall.pattern
+import edu.washington.cs.knowitall.openparse
 
 import edu.washington.cs.knowitall.argumentidentifier.ConfidenceMetric
-import edu.washington.cs.knowitall.extractor.conf.ReVerbConfFunction
+import edu.washington.cs.knowitall.extractor.conf.ReVerbIndependentConfFunction
 
 class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
@@ -39,7 +39,7 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
   lazy val r2a2Extractor = new R2A2()
   lazy val relnounExtractor = new RelationalNounExtractor()
 
-  lazy val reverbConfidence = new ReVerbConfFunction()
+  lazy val reverbConfidence = new ReVerbIndependentConfFunction()
   lazy val r2a2Confidence = new ConfidenceMetric()
 
   implicit def sentence2chunkedSentence(sentence: Sentence): ChunkedSentence = sentence.toChunkedSentence
@@ -47,7 +47,7 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
   def getExtractor(name: String): Sentence => List[(String, Iterable[(Double, (String, String, String))])] = {
     def triple(extr: ChunkedBinaryExtraction) =
       (extr.getArgument1.getText, extr.getRelation.getText, extr.getArgument2.getText)
-    def tripleOpenParse(extr: pattern.extract.DetailedExtraction) =
+    def tripleOpenParse(extr: openparse.extract.DetailedExtraction) =
       (extr.arg1Text, extr.relText, extr.arg2Text)
     s: Sentence => List((name, name match {
       case "ollie" => ollieExtractor.extract(parser.dependencyGraph(s.originalText)).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
