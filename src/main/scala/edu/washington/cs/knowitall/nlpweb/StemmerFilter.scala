@@ -1,24 +1,9 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
-import org.scalatra._
-import scalate.ScalateSupport
-import java.net.URL
+import scala.Array.canBuildFrom
 
-import scala.collection.JavaConversions._
-
-import org.apache.commons.io.IOUtils
-
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
-
-import edu.washington.cs.knowitall.Sentence
-import edu.washington.cs.knowitall.util.DefaultObjects
-import edu.washington.cs.knowitall.nlp.OpenNlpSentenceChunker
-import edu.washington.cs.knowitall.tool.stem.{Stemmer, MorphaStemmer, PorterStemmer, EnglishStemmer}
-import edu.washington.cs.knowitall.extractor.{ReVerbExtractor, R2A2, RelationalNounExtractor, OmniExtractor, NestedExtractor}
+import edu.washington.cs.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
 
 class StemmerFilter extends ToolFilter("stemmer", List("morpha", "porter", "english")) {
   override val info = "Enter tokens to stem, seperated by whitespace."

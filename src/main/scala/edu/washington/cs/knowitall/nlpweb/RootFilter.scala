@@ -1,16 +1,11 @@
 package edu.washington.cs.knowitall.nlpweb
 
-import org.scalatra._
-import scalate.ScalateSupport
-import java.net.URL
-
-import scala.collection.JavaConversions._
+import java.io.PrintWriter
+import java.net.URLConnection
 
 import org.apache.commons.io.IOUtils
 
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
+import RootFilter.dotFormats
 
 object RootFilter {
   lazy val dotFormats = {
@@ -18,16 +13,16 @@ object RootFilter {
     try {
       val p = Runtime.getRuntime().exec("dot -Tasdf")
       p.getOutputStream().close
-      
+
       val response = IOUtils.toString(p.getErrorStream)
-      
+
       if (p.exitValue == 127) {
         // format not found
         None
       }
       else {
         val index = response.indexOf(target)
-        if (index == -1) 
+        if (index == -1)
           // output not as expected
           Some(List())
         else {
@@ -53,21 +48,21 @@ class RootFilter extends BaseFilter {
 
   get("/dotter/") {
     basicPage(
-      name="Dotter", 
-      text="", 
-      info="", 
-      config="", 
+      name="Dotter",
+      text="",
+      info="",
+      config="",
       stats="",
       result="")
   }
 
   get("/dotter/:text") {
     basicPage(
-      name="Dotter", 
+      name="Dotter",
       info="",
-      text=params("text"), 
-      config="", 
-      stats="", 
+      text=params("text"),
+      config="",
+      stats="",
       result="")
   }
 
@@ -77,8 +72,8 @@ class RootFilter extends BaseFilter {
       .replaceAll("""\s+""", " ")
       .replaceAll("\"", """%22""")
     basicPage(
-      name = "Dotter", 
-      text = params("text"), 
+      name = "Dotter",
+      text = params("text"),
       result = "<img src=\"" + servletContext.getContextPath + "/dot/png/"+code+"\">")
   }
 

@@ -1,29 +1,23 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
-import org.scalatra._
-import java.net.URL
-import scalate.ScalateSupport
-import scala.collection.JavaConversions._
-import org.apache.commons.io.IOUtils
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
-import edu.washington.cs.knowitall.tool.parse._
-import edu.washington.cs.knowitall.tool.parse.graph._
-import edu.washington.cs.knowitall.tool.parse.BaseStanfordParser._
+import scala.collection.JavaConversions.asJavaCollection
 
-class ParserFilter extends ToolFilter("parser", List("stanford", "deserialize")) {
+import common.Timing
+import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, StanfordParser}
+import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
+import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
+
+class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deserialize")) {
   import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
   override val info = "Enter a single sentence to be parsed."
 
   lazy val stanfordParser = new StanfordParser()
-//  lazy val maltParser = new MaltParser()
+  lazy val maltParser = new MaltParser()
   lazy val deserializeParser = new DependencyParser {
-    override def dependencyGraph(pickled: String) = 
+    override def dependencyGraph(pickled: String) =
       DependencyGraph.deserialize(pickled)
-      
+
     override def dependencies(pickled: String) =
       DependencyGraph.deserialize(pickled).dependencies
   }
@@ -32,21 +26,21 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "deserialize"))
   def getParser(parser: String): DependencyParser =
     parser match {
       case "stanford" => stanfordParser
-//      case "malt" => maltParser
+      case "malt" => maltParser
       case "deserialize" => deserializeParser
     }
 
   override def config(params: Map[String, String]): String =
     config(
       params.get("pattern"),
-      params.keys.contains("ccCompressed"),
+      params.keys.contains("collapsed"),
       params.keys.contains("collapseNounGroups"),
       params.keys.contains("collapsePrepOf"),
       params.keys.contains("collapseWeakLeaves"))
 
-  def config(pattern: Option[String], ccCompressed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
+  def config(pattern: Option[String], collapsed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
     pattern: <input name="pattern" type="input" size="60" value="""" + pattern.getOrElse("") + """" /><br />
-    <input name="ccCompressed" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """ /> CC Compressed<br />
+    <input name="collapsed" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """ /> Collapsed<br />
     <input name="collapseNounGroups" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Noun Groups<br />
     <input name="collapsePrepOf" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Prep Of<br />
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
@@ -59,14 +53,15 @@ class ParserFilter extends ToolFilter("parser", List("stanford", "deserialize"))
     var (parseTime, graph) = parser.synchronized {
       Timing.time(
         parser match {
-          case parser: BaseStanfordParser =>
-            // if it's a StanfordBaseParser consider doing ccCompressed
-            parser.dependencyGraph(input, if (params.getOrElse("ccCompressed", "") == "true") CCCompressed else None)
           case parser: DependencyParser =>
-            parser.dependencyGraph(input)
+            val graph = parser.dependencyGraph(input)
+            if (params.getOrElse("collapsed", "") == "true")
+              graph.collapse
+            else
+              graph
         })
     }
-    
+
     if (params.getOrElse("collapseNounGroups", "") == "true") {
       graph = graph.collapseNounGroups()
     }

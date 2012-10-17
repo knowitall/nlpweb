@@ -1,20 +1,10 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
-import org.scalatra._
-import java.net.URL
-import scalate.ScalateSupport
+import scala.Array.canBuildFrom
 
-import scala.collection.JavaConversions._
-
-import org.apache.commons.io.IOUtils
-
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
-
-import tool.chunk._
+import common.Timing
+import tool.chunk.{ChunkedToken, Chunker, OpenNlpChunker}
 
 class ChunkerFilter extends ToolFilter("chunker", List("opennlp")) {
   override val info = "Enter sentences to be chunked, one per line."

@@ -1,8 +1,8 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import org.scalatra._
-import scalate.ScalateSupport
+import org.scalatra.ScalatraFilter
+import org.scalatra.scalate.ScalateSupport
 
 trait BaseFilter extends ScalatraFilter with ScalateSupport {
 

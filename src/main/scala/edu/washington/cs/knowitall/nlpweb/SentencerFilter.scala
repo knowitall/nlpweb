@@ -1,20 +1,8 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
-import tool.sentence._
-
-import org.scalatra._
-import scalate.ScalateSupport
-import java.net.URL
-
-import scala.collection.JavaConversions._
-
-import org.apache.commons.io.IOUtils
-
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
+import common.Timing
+import tool.sentence.OpenNlpSentencer
 
 class SentencerFilter extends ToolFilter("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."

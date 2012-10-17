@@ -24,7 +24,7 @@ import edu.washington.cs.knowitall.Sentence
 import edu.washington.cs.knowitall.openparse
 
 import edu.washington.cs.knowitall.argumentidentifier.ConfidenceMetric
-import edu.washington.cs.knowitall.extractor.conf.ReVerbIndependentConfFunction
+import edu.washington.cs.knowitall.extractor.conf.ReVerbOpenNlpConfFunction
 
 class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
@@ -44,7 +44,7 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
   lazy val r2a2Extractor = new R2A2()
   lazy val relnounExtractor = new RelationalNounExtractor()
 
-  lazy val reverbConfidence = new ReVerbIndependentConfFunction()
+  lazy val reverbConfidence = new ReVerbOpenNlpConfFunction()
   lazy val r2a2Confidence = new ConfidenceMetric()
 
   implicit def sentence2chunkedSentence(sentence: Sentence): ChunkedSentence = sentence.toChunkedSentence

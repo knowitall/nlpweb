@@ -1,25 +1,8 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import common._
-
-import org.scalatra._
-import java.net.URL
-import scalate.ScalateSupport
-
-import scala.collection.JavaConversions._
-
-import org.apache.commons.io.IOUtils
-
-import java.net.URLEncoder
-import java.net.URLConnection
-import java.io.PrintWriter
-
-import edu.washington.cs.knowitall.Sentence
-import edu.washington.cs.knowitall.util.DefaultObjects
-import edu.washington.cs.knowitall.stemmer.{Stemmer, MorphaStemmer, PorterStemmer}
-import edu.washington.cs.knowitall.tool.parse.{StanfordParser, OpenNlpParser, ConstituencyParser}
-import edu.washington.cs.knowitall.tool.parse.graph._
+import common.Timing
+import edu.washington.cs.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
 
 class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford", "opennlp")) {
   override val info = "Enter a single sentence to be parsed."

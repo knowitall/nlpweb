@@ -1,9 +1,6 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
-import org.scalatra._
-import scalate.ScalateSupport
-
 abstract class ToolFilter(val path: String, val tools: List[String]) extends BaseFilter {
   get("/*") {
     indexPage(tools.map(path + "/" + _.toString + "/"))
