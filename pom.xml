@@ -23,6 +23,10 @@
       <id>knowitall-snapshot</id>
       <url>http://knowitall.cs.washington.edu/maven2-snapshot</url>
     </repository>
+    <repository>
+      <id>oss snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
