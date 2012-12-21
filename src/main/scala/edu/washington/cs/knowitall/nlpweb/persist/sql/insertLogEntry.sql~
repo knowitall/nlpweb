@@ -1,0 +1,1 @@
+INSERT INTO LogEntry(path) VALUES(:item.path)

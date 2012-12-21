@@ -30,6 +30,21 @@
   </repositories>
   <dependencies>
     <dependency>
+      <groupId>net.databinder</groupId>
+      <artifactId>unfiltered-scalate_2.9.1</artifactId>
+      <version>0.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>net.databinder</groupId>
+      <artifactId>unfiltered-filter_2.9.1</artifactId>
+      <version>0.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>net.databinder</groupId>
+      <artifactId>unfiltered-jetty_2.9.1</artifactId>
+      <version>0.5.1</version>
+    </dependency>
+    <dependency>
       <groupId>edu.washington.cs.knowitall.chunkedextractor</groupId>
       <artifactId>chunkedextractor_2.9.2</artifactId>
       <version>1.0.0-SNAPSHOT</version>
@@ -104,16 +119,21 @@
       <artifactId>nlptools-sentence-opennlp_2.9.2</artifactId>
       <version>${nlptools.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.scalatra</groupId>
       <artifactId>scalatra</artifactId>
       <version>2.1.1</version>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.scalatra</groupId>
       <artifactId>scalatra-scalate</artifactId>
       <version>2.1.1</version>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
@@ -126,21 +146,22 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+    -->
     <!-- Logging -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.0.3</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.4</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.16</version>
+      <version>1.7.1</version>
     </dependency>
     <!-- NLP -->
     <dependency>
