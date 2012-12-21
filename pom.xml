@@ -148,6 +148,16 @@
       <artifactId>commons-io</artifactId>
       <version>2.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.orbroker</groupId>
+      <artifactId>orbroker_2.9.1</artifactId>
+      <version>3.2.1-1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.9.1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
