@@ -12,7 +12,7 @@
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <nlptools.version>2.2.0</nlptools.version>
+    <nlptools.version>2.2.4</nlptools.version>
   </properties>
   <repositories>
     <repository>
@@ -26,12 +26,12 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>edu.washington.cs.knowitall</groupId>
-      <artifactId>nlp</artifactId>
-      <version>1.2.1</version>
+      <groupId>edu.washington.cs.knowitall.chunkedextractor</groupId>
+      <artifactId>chunkedextractor_2.9.2</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
-          <groupId>edu.stanford</groupId>
+          <groupId>edu.washington.cs.knowitall.stanford-corenlp</groupId>
           <artifactId>stanford-ner-models</artifactId>
         </exclusion>
         <exclusion>
@@ -41,14 +41,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>edu.washington.cs.knowitall.common-scala</groupId>
-      <artifactId>common-scala_2.9.2</artifactId>
-      <version>1.0.5</version>
-    </dependency>
-    <dependency>
       <groupId>edu.washington.cs.knowitall.ollie</groupId>
-      <artifactId>ollie-core</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>ollie-core_2.9.2</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>edu.washington.cs.knowitall.nlptools</groupId>
@@ -67,8 +62,13 @@
     </dependency>
     <dependency>
       <groupId>edu.washington.cs.knowitall.nlptools</groupId>
+      <artifactId>nlptools-parse-malt_2.9.2</artifactId>
+      <version>${nlptools.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.washington.cs.knowitall.nlptools</groupId>
       <artifactId>nlptools-parse-opennlp_2.9.2</artifactId>
-      <version>2.2.0</version>
+      <version>${nlptools.version}</version>
     </dependency>
     <dependency>
       <groupId>edu.washington.cs.knowitall.nlptools</groupId>
