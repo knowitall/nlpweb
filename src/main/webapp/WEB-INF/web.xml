@@ -11,6 +11,13 @@
 			edu.washington.cs.knowitall.nlpweb.RootFilter
 		</filter-class>
 	</filter>
+  
+	<filter>
+		<filter-name>log</filter-name>
+		<filter-class>
+			edu.washington.cs.knowitall.nlpweb.LogFilter
+		</filter-class>
+	</filter>
 
 	<filter>
 		<filter-name>parser</filter-name>
@@ -121,6 +128,11 @@
 		<filter-name>chunker</filter-name>
         <url-pattern>/chunker/*</url-pattern>
 	</filter-mapping>
+
+  <filter-mapping>
+    <filter-name>log</filter-name>
+    <url-pattern>/log/*</url-pattern>
+  </filter-mapping>
 
 <!--
 	<filter-mapping>

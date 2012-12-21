@@ -1,6 +1,8 @@
 package edu.washington.cs.knowitall
 package nlpweb
 
+import edu.washington.cs.knowitall.nlpweb.persist.LogEntry
+
 abstract class ToolFilter(val path: String, val tools: List[String]) extends BaseFilter {
   get("/*") {
     indexPage(tools.map(path + "/" + _.toString + "/"))
@@ -13,9 +15,9 @@ abstract class ToolFilter(val path: String, val tools: List[String]) extends Bas
   get("/" + path + "/:" + path + "/*") {
     if (!tools.contains(params(path))) pass
     basicPage(
-      name = title(params), 
+      name = title(params),
       info = info,
-      text = "", 
+      text = "",
       config = config(params),
       stats = "",
       result = "")
@@ -24,9 +26,9 @@ abstract class ToolFilter(val path: String, val tools: List[String]) extends Bas
   get("/" + path + "/:" + path + "/:text") {
     if (!tools.contains(params(path))) pass
     basicPage(
-      name = title(params), 
+      name = title(params),
       info = info,
-      text = params("text"), 
+      text = params("text"),
       config = config(params),
       stats = "",
       result = "")
@@ -38,19 +40,20 @@ abstract class ToolFilter(val path: String, val tools: List[String]) extends Bas
     buildColoredTable(header, rows.map{ items => (None, items) })
 
   def buildColoredTable(header: List[String], rows: Iterable[(Option[String], List[String])]) =
-    "<table>" + 
+    "<table>" +
       "<tr>" + header.map("<th>" + _ + "</th>").mkString("") + "</tr>" +
-      rows.map{ case (color, items) => "<tr>" + items.map("<td"+color.map(" style=\"background-color: " + _ + "\")").getOrElse("")+">" + _ + "</td>").mkString("") + "</tr>" }.mkString("") + 
+      rows.map{ case (color, items) => "<tr>" + items.map("<td"+color.map(" style=\"background-color: " + _ + "\")").getOrElse("")+">" + _ + "</td>").mkString("") + "</tr>" }.mkString("") +
     "</table>"
 
   post("/" + path + "/:" + path + "/*") {
     if (!tools.contains(params(path))) pass
+    LogEntry(None, path, params.iterator.map { case (k, v) => persist.Param(k, v) }.toIndexedSeq).persist()
     val (stats, result) = doPost(params)
     basicPage(
-      name = title(params), 
+      name = title(params),
       info = info,
-      text = params("text"), 
-      config = config(params), 
+      text = params("text"),
+      config = config(params),
       stats = stats,
       result = result)
   }
