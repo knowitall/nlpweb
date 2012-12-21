@@ -1,5 +1,6 @@
 package edu.washington.cs.knowitall
 package nlpweb
+package tool
 
 import scala.Array.canBuildFrom
 import scala.collection.JavaConversions.iterableAsScalaIterable
@@ -21,7 +22,7 @@ import edu.washington.cs.knowitall.tool.stem.{Lemmatized, MorphaStemmer}
 import edu.washington.cs.knowitall.tool.tokenize.Token
 import edu.washington.cs.knowitall.util.DefaultObjects
 
-class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
+class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 
@@ -81,14 +82,14 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
     }))
   }
 
-  override def config(params: Map[String, String]): String = {
-    val currentExtractor = params("extractor")
+  override def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = {
+    val currentExtractor = tool
     (for (extractor <- this.tools) yield {
-      "<input name=\"check_" + extractor + "\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || params.get("check_" + extractor) == Some("true")) """checked="true" """ else "") + " /> " + extractor + "<br />"
+      "<input name=\"check_" + extractor + "\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || req.parameterValues("check_" + extractor).headOption == Some("true")) """checked="true" """ else "") + " /> " + extractor + "<br />"
     }).mkString("\n")
   }
 
-  override def doPost(params: Map[String, String]) = {
+  override def doPost(tool: String, text: String) = {
     case class ExtractionSet(sentence: String, extractions: Seq[(String, Iterable[(Double, (String, String, String))])])
 
     def chunk(string: String) = chunker.synchronized {
@@ -104,10 +105,10 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
       }.mkString("\n")).mkString("\n") + "</table><br/><br/>"
     }
 
-    val extractorName = params("extractor")
-    val text = params("text")
+    val extractorName = tool
 
     // create an extractor that extracts for all checked extractors
+    /*
     def extractor(sentence: Seq[Lemmatized[ChunkedToken]]) =
       (for {
         key <- params.keys; if key.startsWith("check_")
@@ -119,5 +120,7 @@ class ExtractorFilter extends ToolFilter("extractor", List("reverb", "relnoun", 
     ("chunking: " + Timing.Milliseconds.format(chunkTime) + "\n" +
       "extracting: " + Timing.Milliseconds.format(extractionTime),
       "<p>" + extractions.map(_.extractions).flatten.map(_._2).flatten.size + " extraction(s):</p>" + extractions.map(buildTable(_)).mkString("\n"))
+      */
+    ("", "")
   }
 }

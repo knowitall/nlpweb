@@ -1,10 +1,11 @@
 package edu.washington.cs.knowitall
 package nlpweb
+package tool
 
 import common.Timing
 import edu.washington.cs.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
 
-class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford", "opennlp")) {
+class ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
   override val info = "Enter a single sentence to be parsed."
   lazy val stanfordParser = new StanfordParser()
   lazy val openNlpParser = new OpenNlpParser()
@@ -16,11 +17,10 @@ class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford
       case "opennlp" => openNlpParser
     }
 
-  override def doPost(params: Map[String, String]) = {
-    val parser = getParser(params("constituency"))
-    val input = params("text")
+  override def doPost(tool: String, text: String) = {
+    val parser = getParser(tool)
     var (parseTime, graph) = parser.synchronized {
-      Timing.time(parser.parse(input))
+      Timing.time(parser.parse(text))
     }
 
     val buffer = new StringBuffer()
@@ -31,6 +31,6 @@ class ConstituencyParserFilter extends ToolFilter("constituency", List("stanford
       .replaceAll("\"", """%22""")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-     "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" />")
+     "<img src=\"/dot/png/" + dot + "\" />")
   }
 }

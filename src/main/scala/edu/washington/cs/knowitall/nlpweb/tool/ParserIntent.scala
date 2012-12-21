@@ -1,14 +1,15 @@
 package edu.washington.cs.knowitall
 package nlpweb
+package tool
 
 import scala.collection.JavaConversions.asJavaCollection
-
 import common.Timing
 import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, StanfordParser}
 import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
 import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
+import unfiltered.request.HttpRequest
 
-class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deserialize")) {
+class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
   import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
   override val info = "Enter a single sentence to be parsed."
 
@@ -30,13 +31,14 @@ class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deseri
       case "deserialize" => deserializeParser
     }
 
-  override def config(params: Map[String, String]): String =
+  override def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = {
     config(
-      params.get("pattern"),
-      params.keys.contains("collapsed"),
-      params.keys.contains("collapseNounGroups"),
-      params.keys.contains("collapsePrepOf"),
-      params.keys.contains("collapseWeakLeaves"))
+      req.parameterValues("pattern").headOption,
+      req.parameterNames.contains("collapsed"),
+      req.parameterNames.contains("collapseNounGroups"),
+      req.parameterNames.contains("collapsePrepOf"),
+      req.parameterNames.contains("collapseWeakLeaves"))
+  }
 
   def config(pattern: Option[String], collapsed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
     pattern: <input name="pattern" type="input" size="60" value="""" + pattern.getOrElse("") + """" /><br />
@@ -46,22 +48,22 @@ class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deseri
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
-  override def doPost(params: Map[String, String]) = {
-    val parser = getParser(params("parser"))
-    val input = params("text")
-    val pattern = params("pattern")
+  override def doPost(tool: String, text: String) = {
+    val parser = getParser(tool)
+    val pattern = ""
     var (parseTime, graph) = parser.synchronized {
       Timing.time(
         parser match {
           case parser: DependencyParser =>
-            val graph = parser.dependencyGraph(input)
-            if (params.getOrElse("collapsed", "") == "true")
+            val graph = parser.dependencyGraph(text)
+            if (/*params.getOrElse("collapsed", "")*/"true" == "true")
               graph.collapse
             else
               graph
         })
     }
 
+    /*
     if (params.getOrElse("collapseNounGroups", "") == "true") {
       graph = graph.collapseNounGroups()
     }
@@ -81,8 +83,10 @@ class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deseri
         for (m <- matches; e <- m.bipath.edges) yield e)
     }
     else (List(), List())
+    */
+    val (nodes, edges) = (List(), List())
 
-    val rawDot = graph.dotWithHighlights(if (input.length > 100) input.substring(0, 100) + "..." else input, Set.empty, Set.empty)
+    val rawDot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
     val dot = rawDot
       .replaceAll("\n", " ")
       .replaceAll("""\?|#|%|^|~|`|@|&|\$""", "")
@@ -91,6 +95,6 @@ class ParserFilter extends ToolFilter("parser", List("malt", "stanford", "deseri
       .replaceAll(" ", "%20")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-      "<img src=\"" + servletContext.getContextPath + "/dot/png/" + dot + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + rawDot + "</pre>")
+      "<img src=\"/dot/png/" + dot + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + rawDot + "</pre>")
   }
 }

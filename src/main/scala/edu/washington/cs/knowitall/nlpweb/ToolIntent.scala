@@ -14,7 +14,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         name = title(req),
         info = info,
         text = "",
-        config = config(req),
+        config = config(req, tool),
         stats = "",
         result = "")
 
@@ -23,7 +23,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         name = title(req),
         info = info,
         text = text,
-        config = config(req),
+        config = config(req, tool),
         stats = "",
         result = "")
 
@@ -39,7 +39,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         name = title(req),
         info = info,
         text = text,
-        config = config(req),
+        config = config(req, tool),
         stats = stats,
         result = result)
   }
@@ -48,10 +48,10 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
     case Path(Seg(`path` :: tool :: xs)) => path + " " + tool
     case _ => "Unknown"
   }
-  def config[A](req: unfiltered.request.HttpRequest[A]) = ""
+  def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = ""
   def info: String
 
-  def doPost[A](tool: String, text: String): (String, String)
+  def doPost(tool: String, text: String): (String, String)
 
   def buildTable(header: List[String], rows: Iterable[List[String]]) =
     buildColoredTable(header, rows.map{ items => (None, items) })

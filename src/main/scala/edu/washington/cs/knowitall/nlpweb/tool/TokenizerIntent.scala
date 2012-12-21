@@ -1,20 +1,20 @@
 package edu.washington.cs.knowitall
 package nlpweb
+package tool
 
 import scala.Array.canBuildFrom
-
 import common.Timing
-import tool.tokenize.{OpenNlpTokenizer, StanfordTokenizer}
+import edu.washington.cs.knowitall.tool.tokenize.StanfordTokenizer
+import edu.washington.cs.knowitall.tool.tokenize.OpenNlpTokenizer
 
-class TokenizerFilter extends ToolFilter("tokenizer", List("stanford", "opennlp")) {
+class TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {
   override val info = "Enter sentences to be tokenized, one per line."
   lazy val tokenizers = Map(
     "stanford" -> new StanfordTokenizer(),
     "opennlp" -> new OpenNlpTokenizer())
 
-  override def doPost(params: Map[String, String]) = {
-    val tokenizer = tokenizers(params("tokenizer"))
-    val text = params("text")
+  override def doPost(tool: String, text: String) = {
+    val tokenizer = tokenizers(tool)
 
     val lines = text.split("\n")
     val (tokenizeTime, tokenized) = Timing.time(lines.map(tokenizer.tokenize(_)))

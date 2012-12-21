@@ -1,11 +1,11 @@
 package edu.washington.cs.knowitall
-package nlpweb
+package nlpweb.tool
 
 import scala.Array.canBuildFrom
-
 import edu.washington.cs.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
+import edu.washington.cs.knowitall.nlpweb.ToolIntent
 
-class StemmerFilter extends ToolFilter("stemmer", List("morpha", "porter", "english")) {
+class StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {
   override val info = "Enter tokens to stem, seperated by whitespace."
 
   lazy val morphaStemmer = new MorphaStemmer
@@ -19,11 +19,10 @@ class StemmerFilter extends ToolFilter("stemmer", List("morpha", "porter", "engl
       case "english" => englishStemmer
     }
 
-  override def doPost(params: Map[String, String]) = {
-    val stemmer = getStemmer(params("stemmer"))
-    val text = params("text")
+  override def doPost(tool: String, text: String) = {
+    val stemmer = getStemmer(tool)
     ("",
-      text.split("\n").map(line => 
+      text.split("\n").map(line =>
         line.split("\\s+").map(stemmer.stem(_)).dropWhile(_ == null).mkString(" ")).mkString("\n"))
   }
 }

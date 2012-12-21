@@ -9,11 +9,19 @@ import unfiltered.jetty.Http
 import unfiltered.response.Ok
 import unfiltered.scalate.Scalate
 import unfiltered.jetty.ContextBuilder
+import edu.washington.cs.knowitall.nlpweb.tool._
 
 object NlpWeb extends App {
-  val tools = Map(
-    "stemmer" -> new StemmerIntent
-  )
+  val tools = Iterable(
+    new StemmerIntent,
+    new TokenizerIntent,
+    new PostaggerIntent,
+    new ChunkerIntent,
+    new ParserIntent,
+    new SentencerIntent,
+    new ExtractorIntent,
+    new ConstituencyParserIntent
+  ).map(intent => (intent.path, intent)).toMap
 
   def first = Intent {
     case GET(Path("/")) => ResponseString("slash")
