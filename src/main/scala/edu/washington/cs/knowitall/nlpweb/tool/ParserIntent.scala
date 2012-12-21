@@ -32,8 +32,11 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
     }
 
   override def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = {
+    val pattern =
+      if (req.parameterNames contains "pattern") req.parameterValues("pattern").headOption
+      else None
     config(
-      req.parameterValues("pattern").headOption,
+      pattern,
       req.parameterNames.contains("collapsed"),
       req.parameterNames.contains("collapseNounGroups"),
       req.parameterNames.contains("collapsePrepOf"),
@@ -48,7 +51,7 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val parser = getParser(tool)
     val pattern = ""
     var (parseTime, graph) = parser.synchronized {
@@ -63,28 +66,25 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
         })
     }
 
-    /*
-    if (params.getOrElse("collapseNounGroups", "") == "true") {
+    if (req.parameterValues("collapseNounGroups").headOption.getOrElse("") == "true") {
       graph = graph.collapseNounGroups()
     }
 
-    if (params.getOrElse("collapsePrepOf", "") == "true") {
+    if (req.parameterValues("collapsePrepOf").headOption.getOrElse("") == "true") {
       graph = graph.collapseNNPOf
     }
 
-    if (params.getOrElse("collapseWeakLeaves", "") == "true") {
+    if (req.parameterValues("collapseWeakLeaves").headOption.getOrElse("") == "true") {
       graph = graph.collapseWeakLeaves
     }
 
-    val (nodes, edges) = if (!params.get("pattern").map(_.isEmpty).getOrElse(false)) {
-      val pattern = DependencyPattern.deserialize(params("pattern").trim)
+    val (nodes, edges) = if ((req.parameterNames contains "pattern") && !req.parameterValues("pattern").headOption.map(_.isEmpty).getOrElse(false)) {
+      val pattern = DependencyPattern.deserialize(req.parameterValues("pattern").head.trim)
       val matches = pattern(graph.graph)
       (for (m <- matches; v <- m.bipath.nodes) yield v,
         for (m <- matches; e <- m.bipath.edges) yield e)
     }
     else (List(), List())
-    */
-    val (nodes, edges) = (List(), List())
 
     val rawDot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
     val dot = rawDot

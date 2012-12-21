@@ -3,12 +3,7 @@ package nlpweb
 
 import unfiltered.scalate.Scalate
 
-trait BasePage {
-  import org.fusesource.scalate.TemplateEngine
-  import org.fusesource.scalate.layout.DefaultLayoutStrategy
-  implicit val engine = new TemplateEngine(Seq(new java.io.File("src/main/resources/templates")))
-  engine.layoutStrategy = new DefaultLayoutStrategy(engine, "/layouts/default.jade")
-
+trait BasePage extends ScalateEngine {
   def buildTemplatePath(name: String) =
     name + ".jade"
 

@@ -6,6 +6,7 @@ import scala.Array.canBuildFrom
 import common.Timing
 import edu.washington.cs.knowitall.tool.tokenize.StanfordTokenizer
 import edu.washington.cs.knowitall.tool.tokenize.OpenNlpTokenizer
+import unfiltered.request.HttpRequest
 
 class TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {
   override val info = "Enter sentences to be tokenized, one per line."
@@ -13,7 +14,7 @@ class TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp"
     "stanford" -> new StanfordTokenizer(),
     "opennlp" -> new OpenNlpTokenizer())
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val tokenizer = tokenizers(tool)
 
     val lines = text.split("\n")

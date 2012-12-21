@@ -11,7 +11,7 @@ import unfiltered.scalate.Scalate
 import unfiltered.jetty.ContextBuilder
 import edu.washington.cs.knowitall.nlpweb.tool._
 
-object NlpWeb extends App {
+object NlpWeb extends App with ScalateEngine {
   val tools = Iterable(
     new StemmerIntent,
     new TokenizerIntent,
@@ -24,12 +24,10 @@ object NlpWeb extends App {
   ).map(intent => (intent.path, intent)).toMap
 
   def first = Intent {
-    case GET(Path("/")) => ResponseString("slash")
-    case GET(Path("/foo")) => ResponseString("foo")
-    case GET(Path("/bar")) => ResponseString("bar")
+    case req@GET(Path("/")) => Scalate(req, "main.jade")
   }
 
-  val intent = tools.values.map(_.intent).reduce(_ orElse _) orElse first
+  val intent = tools.values.map(_.intent).reduce(_ orElse _) orElse DotIntent.intent orElse first
 
   val plan = new unfiltered.filter.Planify(intent)
 

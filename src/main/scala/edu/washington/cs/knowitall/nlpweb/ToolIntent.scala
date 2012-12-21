@@ -7,7 +7,6 @@ import unfiltered.filter.Intent
 import unfiltered.response.Ok
 
 abstract class ToolIntent(val path: String, val tools: List[String]) extends BasePage {
-
   def intent = Intent {
     case req @ GET(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
       Ok ~> basicPage(req,
@@ -34,7 +33,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
     case req @ POST(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
       // LogEntry(None, path, params.iterator.map { case (k, v) => persist.Param(k, v) }.toIndexedSeq).persist()
       val text = req.parameterValues("text").headOption.getOrElse("")
-      val (stats, result) = post(tool, text)
+      val (stats, result) = post(req, tool, text)
       Ok ~> basicPage(req,
         name = title(req),
         info = info,
@@ -51,7 +50,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
   def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = ""
   def info: String
 
-  def post(tool: String, text: String): (String, String)
+  def post[A](req: HttpRequest[A], tool: String, text: String): (String, String)
 
   def buildTable(header: List[String], rows: Iterable[List[String]]) =
     buildColoredTable(header, rows.map{ items => (None, items) })

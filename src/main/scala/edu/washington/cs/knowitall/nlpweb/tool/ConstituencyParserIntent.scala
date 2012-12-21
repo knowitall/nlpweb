@@ -4,6 +4,7 @@ package tool
 
 import common.Timing
 import edu.washington.cs.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
+import unfiltered.request.HttpRequest
 
 class ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
   override val info = "Enter a single sentence to be parsed."
@@ -17,7 +18,7 @@ class ConstituencyParserIntent extends ToolIntent("constituency", List("stanford
       case "opennlp" => openNlpParser
     }
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val parser = getParser(tool)
     var (parseTime, graph) = parser.synchronized {
       Timing.time(parser.parse(text))

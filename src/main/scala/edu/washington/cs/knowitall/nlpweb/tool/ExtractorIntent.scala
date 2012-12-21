@@ -4,7 +4,6 @@ package tool
 
 import scala.Array.canBuildFrom
 import scala.collection.JavaConversions.iterableAsScalaIterable
-
 import common.Timing
 import edu.washington.cs.knowitall.argumentidentifier.ConfidenceMetric
 import edu.washington.cs.knowitall.chunkedextractor.{BinaryExtractionInstance, Nesty, Relnoun}
@@ -21,6 +20,7 @@ import edu.washington.cs.knowitall.tool.parse.MaltParser
 import edu.washington.cs.knowitall.tool.stem.{Lemmatized, MorphaStemmer}
 import edu.washington.cs.knowitall.tool.tokenize.Token
 import edu.washington.cs.knowitall.util.DefaultObjects
+import unfiltered.request.HttpRequest
 
 class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
@@ -85,11 +85,12 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
   override def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = {
     val currentExtractor = tool
     (for (extractor <- this.tools) yield {
-      "<input name=\"check_" + extractor + "\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || req.parameterValues("check_" + extractor).headOption == Some("true")) """checked="true" """ else "") + " /> " + extractor + "<br />"
+      val key = "check_" + extractor
+      "<input name=\"check_" + extractor + "\" type=\"checkbox\" value=\"true\"" + (if (extractor == currentExtractor || (req.parameterNames contains key) && req.parameterValues(key).headOption == Some("true")) """checked="true" """ else "") + " /> " + extractor + "<br />"
     }).mkString("\n")
   }
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     case class ExtractionSet(sentence: String, extractions: Seq[(String, Iterable[(Double, (String, String, String))])])
 
     def chunk(string: String) = chunker.synchronized {
@@ -108,10 +109,9 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
     val extractorName = tool
 
     // create an extractor that extracts for all checked extractors
-    /*
     def extractor(sentence: Seq[Lemmatized[ChunkedToken]]) =
       (for {
-        key <- params.keys; if key.startsWith("check_")
+        key <- req.parameterNames; if key.startsWith("check_")
         extrs <- getExtractor(key.drop(6))(sentence)
       } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
@@ -120,7 +120,5 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
     ("chunking: " + Timing.Milliseconds.format(chunkTime) + "\n" +
       "extracting: " + Timing.Milliseconds.format(extractionTime),
       "<p>" + extractions.map(_.extractions).flatten.map(_._2).flatten.size + " extraction(s):</p>" + extractions.map(buildTable(_)).mkString("\n"))
-      */
-    ("", "")
   }
 }

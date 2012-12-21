@@ -4,6 +4,7 @@ package tool
 
 import common.Timing
 import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
+import unfiltered.request.HttpRequest
 
 class SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
@@ -11,7 +12,7 @@ class SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   lazy val sentencers = Map(
     "opennlp" -> new OpenNlpSentencer())
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val sentencer = sentencers(tool)
 
     val (sentencerTime, sentenced) = Timing.time(sentencer.sentences(text))

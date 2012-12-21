@@ -7,6 +7,7 @@ import common.Timing
 import edu.washington.cs.knowitall.tool.postag.OpenNlpPostagger
 import edu.washington.cs.knowitall.tool.postag.StanfordPostagger
 import edu.washington.cs.knowitall.tool.postag.PostaggedToken
+import unfiltered.request.HttpRequest
 
 class PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
@@ -14,7 +15,7 @@ class PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford"
     "opennlp" -> new OpenNlpPostagger(),
     "stanford" -> new StanfordPostagger())
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val postagger = postaggers(tool)
 
     val lines = text.split("\n")

@@ -8,6 +8,7 @@ import edu.washington.cs.knowitall.nlpweb.ToolIntent
 import edu.washington.cs.knowitall.tool.chunk.OpenNlpChunker
 import edu.washington.cs.knowitall.tool.chunk.Chunker
 import edu.washington.cs.knowitall.tool.chunk.ChunkedToken
+import unfiltered.request.HttpRequest
 
 class ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
   override val info = "Enter sentences to be chunked, one per line."
@@ -19,7 +20,7 @@ class ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
       case "opennlp" => opennlpChunker
     }
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val chunker = getChunker(tool)
 
     val lines = text.split("\n")

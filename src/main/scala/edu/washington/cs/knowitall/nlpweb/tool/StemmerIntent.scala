@@ -4,6 +4,7 @@ package nlpweb.tool
 import scala.Array.canBuildFrom
 import edu.washington.cs.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
 import edu.washington.cs.knowitall.nlpweb.ToolIntent
+import unfiltered.request.HttpRequest
 
 class StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {
   override val info = "Enter tokens to stem, seperated by whitespace."
@@ -19,7 +20,7 @@ class StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "engl
       case "english" => englishStemmer
     }
 
-  override def post(tool: String, text: String) = {
+  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
     val stemmer = getStemmer(tool)
     ("",
       text.split("\n").map(line =>
