@@ -106,13 +106,13 @@
     </dependency>
     <dependency>
       <groupId>org.scalatra</groupId>
-      <artifactId>scalatra_2.9.1</artifactId>
-      <version>2.0.1</version>
+      <artifactId>scalatra</artifactId>
+      <version>2.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.scalatra</groupId>
-      <artifactId>scalatra-scalate_2.9.1</artifactId>
-      <version>2.0.1</version>
+      <artifactId>scalatra-scalate</artifactId>
+      <version>2.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
