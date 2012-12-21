@@ -89,7 +89,7 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
     }).mkString("\n")
   }
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     case class ExtractionSet(sentence: String, extractions: Seq[(String, Iterable[(Double, (String, String, String))])])
 
     def chunk(string: String) = chunker.synchronized {

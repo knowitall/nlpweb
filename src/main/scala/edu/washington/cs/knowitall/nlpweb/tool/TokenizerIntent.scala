@@ -13,7 +13,7 @@ class TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp"
     "stanford" -> new StanfordTokenizer(),
     "opennlp" -> new OpenNlpTokenizer())
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     val tokenizer = tokenizers(tool)
 
     val lines = text.split("\n")

@@ -14,7 +14,7 @@ class PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford"
     "opennlp" -> new OpenNlpPostagger(),
     "stanford" -> new StanfordPostagger())
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     val postagger = postaggers(tool)
 
     val lines = text.split("\n")

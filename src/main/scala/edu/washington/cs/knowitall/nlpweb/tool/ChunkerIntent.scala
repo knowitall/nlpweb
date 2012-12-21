@@ -19,7 +19,7 @@ class ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
       case "opennlp" => opennlpChunker
     }
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     val chunker = getChunker(tool)
 
     val lines = text.split("\n")

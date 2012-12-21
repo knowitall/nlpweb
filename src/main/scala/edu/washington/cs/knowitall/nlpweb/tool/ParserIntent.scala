@@ -48,7 +48,7 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     val parser = getParser(tool)
     val pattern = ""
     var (parseTime, graph) = parser.synchronized {

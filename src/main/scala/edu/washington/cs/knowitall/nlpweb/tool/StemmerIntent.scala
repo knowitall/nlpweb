@@ -19,7 +19,7 @@ class StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "engl
       case "english" => englishStemmer
     }
 
-  override def doPost(tool: String, text: String) = {
+  override def post(tool: String, text: String) = {
     val stemmer = getStemmer(tool)
     ("",
       text.split("\n").map(line =>
