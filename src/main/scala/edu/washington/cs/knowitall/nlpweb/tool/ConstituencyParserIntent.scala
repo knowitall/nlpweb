@@ -6,7 +6,7 @@ import common.Timing
 import edu.washington.cs.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
 import unfiltered.request.HttpRequest
 
-class ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
+object ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
   override val info = "Enter a single sentence to be parsed."
   lazy val stanfordParser = new StanfordParser()
   lazy val openNlpParser = new OpenNlpParser()

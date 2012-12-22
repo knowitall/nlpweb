@@ -22,7 +22,7 @@ import edu.washington.cs.knowitall.tool.tokenize.Token
 import edu.washington.cs.knowitall.util.DefaultObjects
 import unfiltered.request.HttpRequest
 
-class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
+object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 

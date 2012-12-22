@@ -9,7 +9,7 @@ import edu.washington.cs.knowitall.tool.postag.StanfordPostagger
 import edu.washington.cs.knowitall.tool.postag.PostaggedToken
 import unfiltered.request.HttpRequest
 
-class PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford")) {
+object PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
   lazy val postaggers = Map(
     "opennlp" -> new OpenNlpPostagger(),

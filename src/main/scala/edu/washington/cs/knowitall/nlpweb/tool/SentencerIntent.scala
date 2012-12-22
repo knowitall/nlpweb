@@ -6,7 +6,7 @@ import common.Timing
 import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
 import unfiltered.request.HttpRequest
 
-class SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
+object SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
 
   lazy val sentencers = Map(

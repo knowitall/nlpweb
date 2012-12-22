@@ -9,7 +9,7 @@ import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, Dependency
 import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
 import unfiltered.request.HttpRequest
 
-class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
+object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
   import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
   override val info = "Enter a single sentence to be parsed."
 

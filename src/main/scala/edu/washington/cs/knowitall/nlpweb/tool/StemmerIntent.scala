@@ -6,7 +6,7 @@ import edu.washington.cs.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, Por
 import edu.washington.cs.knowitall.nlpweb.ToolIntent
 import unfiltered.request.HttpRequest
 
-class StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {
+object StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {
   override val info = "Enter tokens to stem, seperated by whitespace."
 
   lazy val morphaStemmer = new MorphaStemmer

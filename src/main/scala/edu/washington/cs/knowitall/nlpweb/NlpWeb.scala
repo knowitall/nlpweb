@@ -20,14 +20,14 @@ import edu.washington.cs.knowitall.nlpweb.persist.Database
 
 object NlpWeb extends App with BasePage {
   val tools = Iterable(
-    new StemmerIntent,
-    new TokenizerIntent,
-    new PostaggerIntent,
-    new ChunkerIntent,
-    new ParserIntent,
-    new SentencerIntent,
-    new ExtractorIntent,
-    new ConstituencyParserIntent).map(intent => (intent.path, intent)).toMap
+    StemmerIntent,
+    TokenizerIntent,
+    PostaggerIntent,
+    ChunkerIntent,
+    ParserIntent,
+    SentencerIntent,
+    ExtractorIntent,
+    ConstituencyParserIntent).map(intent => (intent.path, intent)).toMap
 
   case class Config(port: Int = 8080)
 

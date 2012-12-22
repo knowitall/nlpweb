@@ -8,7 +8,7 @@ import edu.washington.cs.knowitall.tool.tokenize.StanfordTokenizer
 import edu.washington.cs.knowitall.tool.tokenize.OpenNlpTokenizer
 import unfiltered.request.HttpRequest
 
-class TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {
+object TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {
   override val info = "Enter sentences to be tokenized, one per line."
   lazy val tokenizers = Map(
     "stanford" -> new StanfordTokenizer(),

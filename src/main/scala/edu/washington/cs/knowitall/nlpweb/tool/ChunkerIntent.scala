@@ -10,7 +10,7 @@ import edu.washington.cs.knowitall.tool.chunk.Chunker
 import edu.washington.cs.knowitall.tool.chunk.ChunkedToken
 import unfiltered.request.HttpRequest
 
-class ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
+object ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
   override val info = "Enter sentences to be chunked, one per line."
   lazy val opennlpChunker = new OpenNlpChunker()
 
