@@ -18,7 +18,7 @@ class ConstituencyParserIntent extends ToolIntent("constituency", List("stanford
       case "opennlp" => openNlpParser
     }
 
-  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
+  override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val parser = getParser(tool)
     var (parseTime, graph) = parser.synchronized {
       Timing.time(parser.parse(text))

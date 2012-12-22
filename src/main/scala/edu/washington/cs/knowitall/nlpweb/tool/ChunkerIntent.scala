@@ -18,9 +18,10 @@ class ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
   def getChunker(chunker: String): Chunker =
     chunker match {
       case "opennlp" => opennlpChunker
+      case x => throw new IllegalArgumentException("unknown chunker: " + x)
     }
 
-  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
+  override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val chunker = getChunker(tool)
 
     val lines = text.split("\n")

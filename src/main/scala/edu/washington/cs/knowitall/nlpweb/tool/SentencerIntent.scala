@@ -12,7 +12,7 @@ class SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   lazy val sentencers = Map(
     "opennlp" -> new OpenNlpSentencer())
 
-  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
+  override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val sentencer = sentencers(tool)
 
     val (sentencerTime, sentenced) = Timing.time(sentencer.sentences(text))

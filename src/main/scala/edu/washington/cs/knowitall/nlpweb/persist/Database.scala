@@ -17,6 +17,12 @@ object Database {
       session.selectAll(Tokens.selectLogEntry)
     }
   }
+
+  def find(id: Long) = {
+    broker.readOnly() { session =>
+      session.selectOne(Tokens.selectLogEntryById, "id" -> id)
+    }
+  }
 }
 
 object Tokens extends TokenSet(true) {

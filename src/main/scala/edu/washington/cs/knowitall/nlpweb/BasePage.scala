@@ -7,9 +7,10 @@ trait BasePage extends ScalateEngine {
   def buildTemplatePath(name: String) =
     name + ".jade"
 
-  def basicPage[A](req: unfiltered.request.HttpRequest[A], name: String, info: String = "", text: String, config: String="", stats: String="", result: String) = {
+  def basicPage[A](req: unfiltered.request.HttpRequest[A], name: String, id: Option[Long] = None, info: String = "", text: String, config: String="", stats: String="", result: String) = {
     Scalate(req, buildTemplatePath("basic"),
         "name" -> name,
+        "id" -> id,
         "info" -> info,
         "text" -> text,
         "config" -> config,

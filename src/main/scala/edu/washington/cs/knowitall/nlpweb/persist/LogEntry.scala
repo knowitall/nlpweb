@@ -5,8 +5,8 @@ import org.orbroker.RowExtractor
 import org.orbroker.Join
 import org.orbroker.JoinExtractor
 
-case class LogEntry(val id: Option[Long], val path: String, val params: IndexedSeq[Param]) {
-  def persist() {
+case class LogEntry(val id: Option[Long], val path: String, tool: String, val params: IndexedSeq[Param]) {
+  def persist() = {
     Database.broker.transaction() { txn =>
       val newId = txn.executeForKey(Tokens.insertLogEntry, "logentry" -> this)
       for (param <- params) {
@@ -35,6 +35,7 @@ object LogEntryExtractor extends JoinExtractor[LogEntry] {
     new LogEntry(
       row.bigInt("LOGENTRY_ID"),
       row.string("PATH").get,
+      row.string("TOOL").get,
       join.extractSeq(ParamExtractor))
   }
 }

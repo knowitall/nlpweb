@@ -51,7 +51,7 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
-  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
+  override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val parser = getParser(tool)
     val pattern = ""
     var (parseTime, graph) = parser.synchronized {
@@ -66,20 +66,20 @@ class ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deseri
         })
     }
 
-    if (req.parameterValues("collapseNounGroups").headOption.getOrElse("") == "true") {
+    if (params.get("collapseNounGroups").getOrElse("") == "true") {
       graph = graph.collapseNounGroups()
     }
 
-    if (req.parameterValues("collapsePrepOf").headOption.getOrElse("") == "true") {
+    if (params.get("collapsePrepOf").getOrElse("") == "true") {
       graph = graph.collapseNNPOf
     }
 
-    if (req.parameterValues("collapseWeakLeaves").headOption.getOrElse("") == "true") {
+    if (params.get("collapseWeakLeaves").getOrElse("") == "true") {
       graph = graph.collapseWeakLeaves
     }
 
-    val (nodes, edges) = if ((req.parameterNames contains "pattern") && !req.parameterValues("pattern").headOption.map(_.isEmpty).getOrElse(false)) {
-      val pattern = DependencyPattern.deserialize(req.parameterValues("pattern").head.trim)
+    val (nodes, edges) = if ((params.keys contains "pattern") && !params("pattern").isEmpty) {
+      val pattern = DependencyPattern.deserialize(params("pattern").trim)
       val matches = pattern(graph.graph)
       (for (m <- matches; v <- m.bipath.nodes) yield v,
         for (m <- matches; e <- m.bipath.edges) yield e)

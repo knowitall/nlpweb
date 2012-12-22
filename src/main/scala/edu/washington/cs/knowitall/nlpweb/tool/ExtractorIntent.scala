@@ -90,7 +90,7 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
     }).mkString("\n")
   }
 
-  override def post[A](req: HttpRequest[A], tool: String, text: String) = {
+  override def post[A](tool: String, text: String, params: Map[String, String]) = {
     case class ExtractionSet(sentence: String, extractions: Seq[(String, Iterable[(Double, (String, String, String))])])
 
     def chunk(string: String) = chunker.synchronized {
@@ -111,7 +111,7 @@ class ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", 
     // create an extractor that extracts for all checked extractors
     def extractor(sentence: Seq[Lemmatized[ChunkedToken]]) =
       (for {
-        key <- req.parameterNames; if key.startsWith("check_")
+        key <- params.keys; if key.startsWith("check_")
         extrs <- getExtractor(key.drop(6))(sentence)
       } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
