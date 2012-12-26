@@ -45,7 +45,7 @@ object NlpWeb extends App with BasePage {
 
   def run(config: Config) = {
     def first = Intent {
-      case req @ GET(Path("/")) => Scalate(req, "main.jade")
+      case req @ GET(Path("/")) => Scalate(req, "/templates/main.jade")
     }
 
     def logIntent = Intent {

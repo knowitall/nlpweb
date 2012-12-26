@@ -5,7 +5,7 @@ import unfiltered.scalate.Scalate
 
 trait BasePage extends ScalateEngine {
   def buildTemplatePath(name: String) =
-    name + ".jade"
+    "/templates/" + name + ".jade"
 
   def basicPage[A](req: unfiltered.request.HttpRequest[A], name: String, id: Option[Long] = None, info: String = "", text: String, config: String="", stats: String="", result: String) = {
     Scalate(req, buildTemplatePath("basic"),
