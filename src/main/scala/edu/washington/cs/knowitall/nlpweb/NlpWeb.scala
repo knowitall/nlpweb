@@ -17,6 +17,7 @@ import unfiltered.request.Path
 import unfiltered.scalate.Scalate
 import unfiltered.request.Seg
 import edu.washington.cs.knowitall.nlpweb.persist.Database
+import unfiltered.response.HtmlContent
 
 object NlpWeb extends App with BasePage {
   val tools = Iterable(
@@ -45,7 +46,7 @@ object NlpWeb extends App with BasePage {
 
   def run(config: Config) = {
     def first = Intent {
-      case req @ GET(Path("/")) => Scalate(req, "/templates/main.jade")
+      case req @ GET(Path("/")) => HtmlContent ~> Scalate(req, "/templates/main.jade")
     }
 
     def logIntent = Intent {
