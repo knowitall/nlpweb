@@ -124,14 +124,6 @@
       <artifactId>scopt_2.9.2</artifactId>
       <version>2.1.0</version>
     </dependency>
-    <!-- <dependency> <groupId>org.scalatra</groupId> <artifactId>scalatra</artifactId> 
-      <version>2.1.1</version> </dependency> -->
-    <!-- <dependency> <groupId>org.scalatra</groupId> <artifactId>scalatra-scalate</artifactId> 
-      <version>2.1.1</version> </dependency> -->
-    <!-- <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-webapp</artifactId> 
-      <version>8.1.4.v20120524</version> <scope>jetty</scope> </dependency> <dependency> 
-      <groupId>javax.servlet</groupId> <artifactId>servlet-api</artifactId> <version>2.5</version> 
-      <scope>provided</scope> </dependency> -->
     <!-- Logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
