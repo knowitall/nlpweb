@@ -8,7 +8,13 @@ import java.io.File
 object Database {
   val jdbcUrl = "jdbc:derby:nlpdb"
   val config = new BrokerConfig(jdbcUrl)
-  FileSystemRegistrant(new File("sql")).register(config)
+  ClasspathRegistrant(Map(
+      'insertLogEntry -> "/sql/insertLogEntry.sql",
+      'insertParam -> "/sql/insertParam.sql",
+      'selectLogEntry -> "/sql/selectLogEntry.sql",
+      'selectLogEntryById -> "/sql/selectLogEntryById.sql",
+      'selectParam -> "/sql/selectParam.sql"
+  )).register(config)
   config.verify(Tokens.idSet)
   val broker = Broker(config)
 
@@ -23,6 +29,10 @@ object Database {
       session.selectOne(Tokens.selectLogEntryById, "id" -> id)
     }
   }
+}
+
+object CreateDatabase extends App {
+
 }
 
 object Tokens extends TokenSet(true) {
