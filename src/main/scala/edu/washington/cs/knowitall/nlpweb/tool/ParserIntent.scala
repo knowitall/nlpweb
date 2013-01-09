@@ -6,11 +6,11 @@ import scala.collection.JavaConversions.asJavaCollection
 import common.Timing
 import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, StanfordParser}
 import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
-import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
+import edu.washington.cs.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
 
 object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
-  import edu.washington.cs.knowitall.tool.stem.MorphaStemmer.instance
+  implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
 
   lazy val stanfordParser = new StanfordParser()

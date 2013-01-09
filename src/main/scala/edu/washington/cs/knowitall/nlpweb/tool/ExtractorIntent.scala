@@ -95,7 +95,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
 
     def chunk(string: String) = chunker.synchronized {
       sentenceDetector.sentDetect(string).map {
-        string => chunker.chunk(string) map MorphaStemmer.instance.lemmatizeToken
+        string => chunker.chunk(string) map MorphaStemmer.lemmatizeToken
       }
     }
 

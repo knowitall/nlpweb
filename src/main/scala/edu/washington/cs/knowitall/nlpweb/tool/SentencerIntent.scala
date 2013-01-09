@@ -3,8 +3,8 @@ package nlpweb
 package tool
 
 import common.Timing
-import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
 import unfiltered.request.HttpRequest
+import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
 
 object SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
@@ -15,7 +15,7 @@ object SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val sentencer = sentencers(tool)
 
-    val (sentencerTime, sentenced) = Timing.time(sentencer.sentences(text))
+    val (sentencerTime, sentenced) = Timing.time(sentencer.segmentTexts(text))
     ("time: " + Timing.Milliseconds.format(sentencerTime),
     sentenced.map("<li>" + _).mkString("<ol>\n", "\n", "</ol>"))
   }
