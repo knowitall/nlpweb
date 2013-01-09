@@ -29,16 +29,20 @@ object DotIntent extends BasePage {
         List.empty
       } else {
         val index = response.indexOf(target)
-        if (index == -1)
+        if (index == -1) {
           // output not as expected
+          logger.warn("DOT response unexpected: " + response)
           List()
+        }
         else {
           // we found the formats
-          response.substring(index + target.length).trim.toLowerCase.split("\\s+").toList
+          val formats = response.substring(index + target.length).trim.toLowerCase.split("\\s+").toList
+          logger.info("Supported DOT formats: " + formats)
+          formats
         }
       }
     } catch {
-      case _ => List.empty
+      case e => logger.error("Could not establish dot formats.", e); List.empty
     }
   }
 
