@@ -12,7 +12,7 @@ import edu.washington.cs.knowitall.extractor.conf.ReVerbOpenNlpConfFunction
 import edu.washington.cs.knowitall.nlp.ChunkedSentence
 import edu.washington.cs.knowitall.nlp.extraction.ChunkedBinaryExtraction
 import edu.washington.cs.knowitall.ollie.Ollie
-import edu.washington.cs.knowitall.ollie.confidence.OllieIndependentConfFunction
+import edu.washington.cs.knowitall.ollie.confidence.OllieConfidenceFunction
 import edu.washington.cs.knowitall.openparse
 import edu.washington.cs.knowitall.openparse.OpenParse
 import edu.washington.cs.knowitall.tool.chunk.{ChunkedToken, OpenNlpChunker}
@@ -26,10 +26,10 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 
-  lazy val parser = new MaltParser()
+  lazy val parser = ParserIntent.maltParser
 
   lazy val ollieExtractor = new Ollie()
-  lazy val ollieConfidence = OllieIndependentConfFunction.loadDefaultClassifier()
+  lazy val ollieConfidence = OllieConfidenceFunction.loadDefaultClassifier()
 
   lazy val openparseExtractor = {
     OpenParse.withDefaultModel()
@@ -42,7 +42,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
   lazy val reverbConfidence = new ReVerbOpenNlpConfFunction()
   lazy val r2a2Confidence = new ConfidenceMetric()
 
-  lazy val chunker = new OpenNlpChunker
+  lazy val chunker = ChunkerIntent.opennlpChunker
 
   implicit def lemmatized2token(lemmatized: Lemmatized[ChunkedToken]): Token = {
     lemmatized.token
