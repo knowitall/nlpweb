@@ -13,9 +13,11 @@ import unfiltered.response.ComposeResponse
 import unfiltered.response.ContentType
 import unfiltered.response.ResponseBytes
 import java.net.URLDecoder
+import org.apache.commons.codec.net.URLCodec
 
 object DotIntent extends BasePage {
   val logger = LoggerFactory.getLogger(this.getClass)
+  val urlCodec = new URLCodec
   lazy val dotFormats = {
     val target = "Use one of:"
     try {
@@ -66,10 +68,8 @@ object DotIntent extends BasePage {
         result = "")
 
     case req @ POST(Path(Seg("dotter" :: xs))) =>
-      val code = req.parameterValues("text").headOption.get
-        .replaceAll("\\n", " ")
-        .replaceAll("""\s+""", " ")
-        .replaceAll("\"", """%22""")
+      val code = urlCodec.encode(
+          req.parameterValues("text").headOption.get.replaceAll("\\n", " ").replaceAll("""\s+""", " "), "UTF8")
       basicPage(req,
         name = "Dotter",
         text = code,

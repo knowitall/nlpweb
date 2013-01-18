@@ -124,6 +124,11 @@
       <artifactId>scopt_2.9.2</artifactId>
       <version>2.1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.1</version>
+    </dependency>
     <!-- Logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
