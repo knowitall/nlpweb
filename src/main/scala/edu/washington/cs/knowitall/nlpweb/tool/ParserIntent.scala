@@ -8,10 +8,13 @@ import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, Sta
 import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
 import edu.washington.cs.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
+import org.apache.commons.codec.net.URLCodec
 
 object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
   implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
+
+  val urlCodec = new URLCodec
 
   lazy val stanfordParser = new StanfordParser()
   lazy val maltParser = new MaltParser()
@@ -87,12 +90,7 @@ object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deser
     else (List(), List())
 
     val rawDot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
-    val dot = rawDot
-      .replaceAll("\n", " ")
-      .replaceAll("""\?|#|%|^|~|`|@|&|\$""", "")
-      .replaceAll("""\s+""", " ")
-      .replaceAll("\"", """%22""")
-      .replaceAll(" ", "%20")
+    val dot = urlCodec.encode(rawDot.replaceAll("\\n", " ").replaceAll("""\s+""", " "), "UTF8")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
       "<img src=\"/dot/png/" + dot + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + rawDot + "</pre>")
