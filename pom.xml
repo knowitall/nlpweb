@@ -4,7 +4,7 @@
   <artifactId>nlpweb</artifactId>
   <name>nlpweb</name>
   <version>1.0.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <parent>
     <groupId>edu.washington.cs.knowitall</groupId>
     <artifactId>knowitall</artifactId>
