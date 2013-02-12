@@ -1,5 +1,7 @@
 package edu.washington.cs.knowitall.nlpweb
 
+import org.fusesource.scalate.TemplateEngine
+import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.fusesource.scalate.util.FileResourceLoader
 import org.fusesource.scalate.util.Resource
 

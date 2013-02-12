@@ -1,5 +1,6 @@
 package edu.washington.cs.knowitall.nlpweb
 
+import edu.washington.cs.knowitall.nlpweb.persist.Database
 import edu.washington.cs.knowitall.nlpweb.tool.ChunkerIntent
 import edu.washington.cs.knowitall.nlpweb.tool.ConstituencyParserIntent
 import edu.washington.cs.knowitall.nlpweb.tool.ExtractorIntent
@@ -14,10 +15,9 @@ import unfiltered.jetty.ContextBuilder
 import unfiltered.jetty.Http
 import unfiltered.request.GET
 import unfiltered.request.Path
-import unfiltered.scalate.Scalate
 import unfiltered.request.Seg
-import edu.washington.cs.knowitall.nlpweb.persist.Database
 import unfiltered.response.HtmlContent
+import unfiltered.scalate.Scalate
 
 object NlpWeb extends App with BasePage {
   val tools = Iterable(

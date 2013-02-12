@@ -2,8 +2,13 @@ package edu.washington.cs.knowitall.nlpweb
 
 import java.io.PrintWriter
 import java.net.URLConnection
+import java.net.URLDecoder
+
+import org.apache.commons.codec.binary.Base64
+import org.apache.commons.codec.net.URLCodec
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
+
 import unfiltered.filter.Intent
 import unfiltered.request.GET
 import unfiltered.request.POST
@@ -13,9 +18,6 @@ import unfiltered.response.ComposeResponse
 import unfiltered.response.ContentType
 import unfiltered.response.ResponseBytes
 import unfiltered.response.ResponseString
-import java.net.URLDecoder
-import org.apache.commons.codec.net.URLCodec
-import org.apache.commons.codec.binary.Base64
 
 object DotIntent extends BasePage {
   val base64 = new Base64(false)

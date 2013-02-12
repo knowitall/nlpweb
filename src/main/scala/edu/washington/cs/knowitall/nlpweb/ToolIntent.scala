@@ -6,6 +6,7 @@ import unfiltered.request._
 import unfiltered.filter.Intent
 import unfiltered.response.Ok
 import edu.washington.cs.knowitall.nlpweb.persist.Param
+import org.slf4j.LoggerFactory
 
 abstract class ToolIntent(val path: String, val tools: List[String]) extends BasePage {
   def intent = Intent {
@@ -33,12 +34,17 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
 
     case req @ POST(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
       val params = req.parameterNames.map { case (k) => persist.Param(k, req.parameterValues(k).head) }.toIndexedSeq :+ Param("tool", tool)
-      val entry = LogEntry(None, path, tool, params).persist()
+      val entry =
+        try {
+          Some(LogEntry(None, path, tool, params).persist())
+        } catch {
+          case e => ToolIntent.logger.error("Could not log request", e); None
+        }
       val text = req.parameterValues("text").headOption.getOrElse("")
       val (stats, result) = post(req, tool, text)
       Ok ~> basicPage(req,
         name = title(req),
-        id = entry.id,
+        id = entry.flatMap(_.id),
         info = info,
         text = text,
         config = config(req, tool),
@@ -71,4 +77,8 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
       "<tr>" + header.map("<th>" + _ + "</th>").mkString("") + "</tr>" +
       rows.map{ case (color, items) => "<tr>" + items.map("<td"+color.map(" style=\"background-color: " + _ + "\")").getOrElse("")+">" + _ + "</td>").mkString("") + "</tr>" }.mkString("") +
     "</table>"
+}
+
+object ToolIntent {
+  val logger = LoggerFactory.getLogger(this.getClass)
 }
