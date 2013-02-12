@@ -12,8 +12,10 @@ import unfiltered.request.Seg
 import unfiltered.response.ComposeResponse
 import unfiltered.response.ContentType
 import unfiltered.response.ResponseBytes
+import unfiltered.response.ResponseString
 import java.net.URLDecoder
 import org.apache.commons.codec.net.URLCodec
+import org.apache.commons.codec.binary.Base64
 
 object DotIntent extends BasePage {
   val base64 = new Base64(false)
@@ -99,10 +101,6 @@ object DotIntent extends BasePage {
         text = dot,
         result = "<img id=\"graph\" src=\"data:image/"+DEFAULT_FORMAT+";base64,"+base64Image+"\">")
     case req @ POST(Path(Seg("dotbin" :: format :: Nil))) =>
-      req match {
-        case Params(params) => println(params)
-      }
-      req.parameterNames foreach println
       val dot = req.parameterValues("dot").headOption.getOrElse {
         throw new IllegalArgumentException("dot field not specified in POST")
       }
