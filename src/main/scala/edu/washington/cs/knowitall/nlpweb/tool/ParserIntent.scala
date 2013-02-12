@@ -89,10 +89,10 @@ object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deser
     }
     else (List(), List())
 
-    val rawDot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
-    val dot = urlCodec.encode(rawDot.replaceAll("\\n", " ").replaceAll("""\s+""", " "), "UTF8")
+    val dot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
+    val base64Image = DotIntent.dotbase64(dot, "png")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-      "<img src=\"/dot/png/" + dot + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + rawDot + "</pre>")
+      "<img src=\"data:image/png;base64," + base64Image + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + dot + "</pre>")
   }
 }
