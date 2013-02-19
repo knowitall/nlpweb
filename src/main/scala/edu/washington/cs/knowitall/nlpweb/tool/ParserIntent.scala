@@ -4,19 +4,19 @@ package tool
 
 import scala.collection.JavaConversions.asJavaCollection
 import common.Timing
-import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, StanfordParser}
+import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, ClearParser}
 import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
 import edu.washington.cs.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
 import org.apache.commons.codec.net.URLCodec
 
-object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deserialize")) {
+object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserialize")) {
   implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
 
   val urlCodec = new URLCodec
 
-  lazy val stanfordParser = new StanfordParser()
+  lazy val clearParser = new ClearParser()
   lazy val maltParser = new MaltParser()
   lazy val deserializeParser = new DependencyParser {
     override def dependencyGraph(pickled: String) =
@@ -29,7 +29,7 @@ object ParserIntent extends ToolIntent("parser", List("malt", "stanford", "deser
   val parsers = tools
   def getParser(parser: String): DependencyParser =
     parser match {
-      case "stanford" => stanfordParser
+      case "clear" => clearParser
       case "malt" => maltParser
       case "deserialize" => deserializeParser
     }

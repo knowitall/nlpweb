@@ -120,6 +120,11 @@
       <version>${nlptools.version}</version>
     </dependency>
     <dependency>
+      <groupId>edu.washington.cs.knowitall.nlptools</groupId>
+      <artifactId>nlptools-srl-clear_2.9.2</artifactId>
+      <version>2.3.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>com.github.scopt</groupId>
       <artifactId>scopt_2.9.2</artifactId>
       <version>2.1.0</version>

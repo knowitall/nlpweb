@@ -25,7 +25,7 @@
 
   tools += ("Dependency Parser" -> List(
       ("Malt", "/parser/malt"),
-      ("Stanford", "/parser/stanford"),
+      ("Clear", "/parser/clear"),
       ("Deserialize", "/parser/deserialize")
   ))
 
@@ -36,6 +36,10 @@
 
   tools += ("Sentencer" -> List(
       ("OpenNLP", "/sentencer/opennlp")
+  ))
+
+  tools += ("SRL" -> List(
+      ("Clear", "/srl/clear")
   ))
 
   tools += ("Stemmer" -> List(

@@ -18,6 +18,7 @@ import unfiltered.request.Path
 import unfiltered.request.Seg
 import unfiltered.response.HtmlContent
 import unfiltered.scalate.Scalate
+import edu.washington.cs.knowitall.nlpweb.tool.SrlIntent
 
 object NlpWeb extends App with BasePage {
   val tools = Iterable(
@@ -28,6 +29,7 @@ object NlpWeb extends App with BasePage {
     ParserIntent,
     SentencerIntent,
     ExtractorIntent,
+    SrlIntent,
     ConstituencyParserIntent).map(intent => (intent.path, intent)).toMap
 
   case class Config(port: Int = 8080)
