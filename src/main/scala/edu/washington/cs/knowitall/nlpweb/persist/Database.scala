@@ -42,7 +42,8 @@ object CreateDatabase extends App {
   }
 
   val database = if (args.length > 0) args(0) else "nlpdb"
-  Resource.using(DriverManager.getConnection("jdbc:derby:" + database)) { conn =>
+  println("opening connection: " + database)
+  Resource.using(DriverManager.getConnection("jdbc:derby:" + database + ";create=true")) { conn =>
     println("Dropping old tables...")
     drop(conn)("LogEntry")
     drop(conn)("Param")

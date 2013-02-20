@@ -21,8 +21,9 @@ import edu.washington.cs.knowitall.tool.stem.{Lemmatized, MorphaStemmer}
 import edu.washington.cs.knowitall.tool.tokenize.Token
 import edu.washington.cs.knowitall.util.DefaultObjects
 import unfiltered.request.HttpRequest
+import knowitall.srl.SrlExtractor
 
-object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "r2a2", "openparse", "ollie")) {
+object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie", "srl")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
 
@@ -38,6 +39,8 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
   lazy val nestyExtractor = new Nesty()
   lazy val r2a2Extractor = new R2A2()
   lazy val relnounExtractor = new Relnoun()
+
+  lazy val srlExtractor = new SrlExtractor(SrlIntent.clearSrl)
 
   lazy val reverbConfidence = new ReVerbOpenNlpConfFunction()
   lazy val r2a2Confidence = new ConfidenceMetric()
@@ -79,6 +82,13 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
         val confs: List[Double] = extrs map reverbConfidence.getConf
         confs zip (extrs.map(triple(_)))
       case "relnoun" => relnounExtractor.extract(s).map(ex => (0.5, tripleChunked(ex)))
+      case "srl" => {
+        val parser = ParserIntent.clearParser
+        val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
+        srlExtractor.apply(graph).map { extraction =>
+          (0.0, (extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString(", ")))
+        }
+      }
     }))
   }
 
