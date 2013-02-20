@@ -166,6 +166,11 @@
       <artifactId>derby</artifactId>
       <version>10.9.1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.riedelcastro</groupId>
+      <artifactId>whatswrong</artifactId>
+      <version>0.2.4-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>

@@ -54,6 +54,12 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
     <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (collapseWeakLeaves) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
+  def whatswrongImage(graph: DependencyGraph) = {
+    import visualize.Whatswrong._
+    val b64 = implicitly[CanWrite[DependencyGraph, Base64String]].write(graph)
+    "<img src=\"data:image/png;base64," + b64.string + "\">"
+  }
+
   override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val parser = getParser(tool)
     val pattern = ""
@@ -93,6 +99,6 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
     val base64Image = DotIntent.dotbase64(dot, "png")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-      "<img src=\"data:image/png;base64," + base64Image + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + dot + "</pre>")
+      whatswrongImage(graph) + "<br/><br/>" + "<img src=\"data:image/png;base64," + base64Image + "\" /><br><pre>serialized: " + graph.serialize + "\n\n" + dot + "</pre>")
   }
 }

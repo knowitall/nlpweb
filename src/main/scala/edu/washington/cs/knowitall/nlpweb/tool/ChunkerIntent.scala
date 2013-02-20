@@ -9,6 +9,7 @@ import edu.washington.cs.knowitall.tool.chunk.OpenNlpChunker
 import edu.washington.cs.knowitall.tool.chunk.Chunker
 import edu.washington.cs.knowitall.tool.chunk.ChunkedToken
 import unfiltered.request.HttpRequest
+import com.googlecode.whatswrong.NLPInstance
 
 object ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
   override val info = "Enter sentences to be chunked, one per line."
@@ -20,6 +21,12 @@ object ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
       case "opennlp" => opennlpChunker
       case x => throw new IllegalArgumentException("unknown chunker: " + x)
     }
+
+  def image(tokens: Seq[ChunkedToken]) = {
+    import visualize.Whatswrong._
+    val b64 = implicitly[CanWrite[Seq[ChunkedToken], Base64String]].write(tokens)
+    "<img src=\"data:image/png;base64," + b64.string + "\">"
+  }
 
   override def post[A](tool: String, text: String, params: Map[String, String]) = {
     val chunker = getChunker(tool)
@@ -33,6 +40,6 @@ object ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
         chunked.map {
           case ChunkedToken(chunk, postag, string, offset) => if (chunk.startsWith("B")) colored = !colored; (Some(if (chunk.startsWith("O")) "pink" else if (colored) "lightgrey" else "white"), List(string, postag, chunk))
         })
-    }.mkString("<br>\n") )
+    }.mkString("<br>\n") + (chunkeds map image).mkString("<p>", "\n", "</p>") )
   }
 }
