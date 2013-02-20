@@ -48,10 +48,10 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
 
   def config(pattern: Option[String], collapsed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
     pattern: <input name="pattern" type="input" size="60" value="""" + pattern.getOrElse("") + """" /><br />
-    <input name="collapsed" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """ /> Collapsed<br />
-    <input name="collapseNounGroups" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Noun Groups<br />
-    <input name="collapsePrepOf" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Prep Of<br />
-    <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (true) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
+    <input name="collapsed" type="checkbox" value="true" """ + (if (collapsed) """checked="true" """ else "") + """ /> Collapsed<br />
+    <input name="collapseNounGroups" type="checkbox" value="true" """ + (if (collapseNounGroups) """checked="true" """ else "") + """/> Collapse Noun Groups<br />
+    <input name="collapsePrepOf" type="checkbox" value="true" """ + (if (collapsePrepOf) """checked="true" """ else "") + """/> Collapse Prep Of<br />
+    <input name="collapseWeakLeaves" type="checkbox" value="true" """ + (if (collapseWeakLeaves) """checked="true" """ else "") + """/> Collapse Weak Leaves<br />
     <br />"""
 
   override def post[A](tool: String, text: String, params: Map[String, String]) = {
