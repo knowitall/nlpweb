@@ -101,7 +101,7 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
     ("parse time: " + Timing.Milliseconds.format(parseTime),
       whatswrongImage(graph) + "<br/><br/>" +
       "<img src=\"data:image/png;base64," + base64Image + "\" /><br>" +
-      "<pre>serialized: " + graph.serialize + "\n\n" +
+      "<pre>" + graph.serialize + "\n\n" +
       graph.graph.toString + "\n\n" +
       dot + "</pre>")
   }
