@@ -7,6 +7,7 @@ import unfiltered.request.HttpRequest
 import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
 import edu.washington.cs.knowitall.tool.srl.ClearSrl
 import edu.washington.cs.knowitall.tool.srl.Frame
+import edu.washington.cs.knowitall.tool.srl.FrameHierarchy
 import edu.washington.cs.knowitall.tool.parse.graph.DependencyGraph
 
 object SrlIntent extends ToolIntent("srl", List("clear")) {
@@ -43,7 +44,8 @@ object SrlIntent extends ToolIntent("srl", List("clear")) {
 
     val (srlTime, frames) = Timing.time(srl(text))
     val frameSets = Seq(frames)
+    val hierarchySets = Seq(FrameHierarchy.fromFrames(frames.graph, frames.frames.toIndexedSeq))
     ("time: " + Timing.Milliseconds.format(srlTime),
-    "<p>" + frameSets.flatMap(_.frames).size + " frame(s):</p>" + frameSets.map(buildTable(_)).mkString("\n") + (frameSets flatMap {case SrlPackage(frames, graph) => frames map (frame => image((graph, frame)))}).mkString("<p>", "<br />\n", "</p>"))
+    "<p>" + frameSets.flatMap(_.frames).size + " frame(s):</p>" + frameSets.map(buildTable(_)).mkString("\n") + hierarchySets.map(_.mkString("<p>", "<br />", "</p>")).mkString("\n") + (frameSets flatMap {case SrlPackage(frames, graph) => frames map (frame => image((graph, frame)))}).mkString("<p>", "<br />\n", "</p>") + "<p><pre>" + frames.frames.map(_.serialize).mkString("\n") + "</pre></p>")
   }
 }
