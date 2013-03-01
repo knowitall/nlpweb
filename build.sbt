@@ -4,6 +4,8 @@ version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.9.2"
 
+mainClass := Some("edu.washington.cs.knowitall.nlpweb.NlpWeb")
+
 resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/",
     "Local Maven Repository" at Path.userHome.asFile.toURI.toURL+"/.m2/repository")
 
