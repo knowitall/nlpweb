@@ -7,8 +7,7 @@ version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.9.2"
 
-resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/",
-    "Local Maven Repository" at Path.userHome.asFile.toURI.toURL+"/.m2/repository")
+resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/")
 
 libraryDependencies ++= Seq(
     "net.databinder" %% "unfiltered-scalate" % "0.6.3-2",
@@ -37,7 +36,7 @@ libraryDependencies ++= Seq(
     "commons-io" % "commons-io" % "2.3",
     "org.orbroker" % "orbroker_2.9.1" % "3.2.1-1",
     "org.apache.derby" % "derby" % "10.9.1.0",
-    "org.riedelcastro" % "whatswrong" % "0.2.4-SNAPSHOT")
+    "org.riedelcastro" % "whatswrong" % "0.2.4")
 
 mainClass in assembly := Some("edu.washington.cs.knowitall.nlpweb.NlpWeb")
 
