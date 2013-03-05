@@ -10,7 +10,7 @@ scalaVersion := "2.9.2"
 resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/")
 
 libraryDependencies ++= Seq(
-    "net.databinder" %% "unfiltered-scalate" % "0.6.3-2",
+    "net.databinder" %% "unfiltered-scalate" % "0.6.3",
     "net.databinder" %% "unfiltered-filter" % "0.6.3",
     "net.databinder" %% "unfiltered-jetty" % "0.6.3",
     "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.0" exclude("net.sf.jwordnet", "jwnl"),
