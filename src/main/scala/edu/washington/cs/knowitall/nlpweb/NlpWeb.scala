@@ -74,9 +74,13 @@ object NlpWeb extends App with BasePage {
     val plan = new unfiltered.filter.Planify(intent)
 
     println("starting...")
-    Http(config.port).context("/public") { ctx: ContextBuilder =>
-      ctx.resources(this.getClass.getResource("/pub"))
-    }.filter(plan).run()
+    try {
+      Http(config.port).context("/public") { ctx: ContextBuilder =>
+        ctx.resources(this.getClass.getResource("/pub"))
+      }.filter(plan).run()
+    } catch {
+      case e: java.net.BindException => println("Address already in use: " + config.port); System.exit(1)
+    }
   }
 }
 
