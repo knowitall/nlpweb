@@ -1,18 +1,20 @@
+import AssemblyKeys._ // put this at the top of the file
+assemblySettings
+
 name := "nlpweb"
 
 version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.9.2"
 
-mainClass := Some("edu.washington.cs.knowitall.nlpweb.NlpWeb")
-
 resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/",
     "Local Maven Repository" at Path.userHome.asFile.toURI.toURL+"/.m2/repository")
 
-libraryDependencies ++= Seq("net.databinder" %% "unfiltered-scalate" % "0.6.3",
+libraryDependencies ++= Seq(
+    "net.databinder" %% "unfiltered-scalate" % "0.6.3-2",
     "net.databinder" %% "unfiltered-filter" % "0.6.3",
     "net.databinder" %% "unfiltered-jetty" % "0.6.3",
-    "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.0",
+    "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.0" exclude("net.sf.jwordnet", "jwnl"),
     "edu.washington.cs.knowitall.ollie" %% "ollie-core" % "1.0.1",
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-core" % "2.3.1-SNAPSHOT",
     "edu.washington.cs.knowitall.nlptools" %% "nlptools-stem-morpha" % "2.3.1-SNAPSHOT",
@@ -37,3 +39,13 @@ libraryDependencies ++= Seq("net.databinder" %% "unfiltered-scalate" % "0.6.3",
     "org.apache.derby" % "derby" % "10.9.1.0",
     "org.riedelcastro" % "whatswrong" % "0.2.4-SNAPSHOT")
 
+mainClass in assembly := Some("edu.washington.cs.knowitall.nlpweb.NlpWeb")
+
+mergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) =>
+    (xs map {_.toLowerCase}) match {
+      case ("manifest.mf" :: Nil) | ("index.list" :: Nil) | ("dependencies" :: Nil) => MergeStrategy.discard
+      case _ => MergeStrategy.discard
+    }
+  case _ => MergeStrategy.first
+}
