@@ -19,7 +19,7 @@ import edu.washington.cs.knowitall.nlpweb.tool.SrlIntent.SrlPackage
 import java.awt.Color
 
 object Whatswrong {
-  final val MAX_WIDTH = 1200
+  final val MAX_WIDTH = 2000
   final val MAX_HEIGHT = 200
 
   val renderer = new SingleSentenceRenderer()
