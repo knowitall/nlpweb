@@ -9,8 +9,11 @@ import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, Dependency
 import edu.washington.cs.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
 import org.apache.commons.codec.net.URLCodec
+import org.slf4j.LoggerFactory
 
 object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserialize")) {
+  val logger = LoggerFactory.getLogger(this.getClass)
+
   implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
 
@@ -55,9 +58,14 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
     <br />"""
 
   def whatswrongImage(graph: DependencyGraph) = {
-    import visualize.Whatswrong._
-    val b64 = implicitly[CanWrite[DependencyGraph, Base64String]].write(graph)
-    "<img src=\"data:image/png;base64," + b64.string + "\">"
+    try {
+      import visualize.Whatswrong._
+      val b64 = implicitly[CanWrite[DependencyGraph, Base64String]].write(graph)
+      "<img src=\"data:image/png;base64," + b64.string + "\">"
+    }
+    catch {
+      case e => logger.error("Could not build image for: " + graph.serialize, e); ""
+    }
   }
 
   override def post[A](tool: String, text: String, params: Map[String, String]) = {

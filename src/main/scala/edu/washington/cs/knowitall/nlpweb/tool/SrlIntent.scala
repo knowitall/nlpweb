@@ -9,8 +9,11 @@ import edu.washington.cs.knowitall.tool.srl.ClearSrl
 import edu.washington.cs.knowitall.tool.srl.Frame
 import edu.washington.cs.knowitall.tool.srl.FrameHierarchy
 import edu.washington.cs.knowitall.tool.parse.graph.DependencyGraph
+import org.slf4j.LoggerFactory
 
 object SrlIntent extends ToolIntent("srl", List("clear")) {
+  val logger = LoggerFactory.getLogger(this.getClass)
+
   override val info = "Enter a sentence text to be SRL-ed."
   case class SrlPackage(frames: Seq[Frame], graph: DependencyGraph)
   type CompleteSrl = String=>SrlPackage
@@ -34,9 +37,14 @@ object SrlIntent extends ToolIntent("srl", List("clear")) {
   }
 
   def image(srl: (DependencyGraph, Frame)) = {
-    import visualize.Whatswrong._
-    val b64 = implicitly[CanWrite[(DependencyGraph, Frame), Base64String]].write(srl)
-    "<img src=\"data:image/png;base64," + b64.string + "\">"
+    try {
+      import visualize.Whatswrong._
+      val b64 = implicitly[CanWrite[(DependencyGraph, Frame), Base64String]].write(srl)
+      "<img src=\"data:image/png;base64," + b64.string + "\">"
+    }
+    catch {
+      case e => logger.error("Could not build image for: " + srl, e); ""
+    }
   }
 
   override def post[A](tool: String, text: String, params: Map[String, String]) = {
