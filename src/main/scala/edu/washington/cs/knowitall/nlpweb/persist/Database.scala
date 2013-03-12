@@ -9,6 +9,7 @@ import edu.washington.cs.knowitall.common.Resource
 
 object Database {
   val jdbcUrl = "jdbc:derby:nlpdb"
+  DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
   val config = new BrokerConfig(jdbcUrl)
   ClasspathRegistrant(Map(
     'insertLogEntry -> "/sql/insertLogEntry.sql",
