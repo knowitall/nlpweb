@@ -23,11 +23,9 @@ import edu.washington.cs.knowitall.util.DefaultObjects
 import unfiltered.request.HttpRequest
 import knowitall.srl.SrlExtractor
 
-object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie", "srl")) {
+object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie-clear", "ollie-malt", "srl")) {
   override val info = "Enter sentences from which to extract relations, one per line."
   lazy val sentenceDetector = DefaultObjects.getDefaultSentenceDetector()
-
-  lazy val parser = ParserIntent.maltParser
 
   lazy val ollieExtractor = new Ollie()
   lazy val ollieConfidence = OllieConfidenceFunction.loadDefaultClassifier()
@@ -66,12 +64,17 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
       (inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
 
     s: Seq[Lemmatized[ChunkedToken]] => List((name, name match {
-      case "ollie" => {
-        val extrs = ollieExtractor.extract(parser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toList
+      case "ollie-clear" => {
+        val extrs = ollieExtractor.extract(ParserIntent.clearParser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toList
         val confs = extrs map ollieConfidence.getConf
         confs zip (extrs map tripleOllie)
       }
-      case "openparse" => openparseExtractor.extract(parser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
+      case "ollie-malt" => {
+        val extrs = ollieExtractor.extract(ParserIntent.maltParser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toList
+        val confs = extrs map ollieConfidence.getConf
+        confs zip (extrs map tripleOllie)
+      }
+      case "openparse" => openparseExtractor.extract(ParserIntent.maltParser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toSeq.map(extr => (extr._1, tripleOpenParse(extr._2)))
       case "reverb" =>
         val extrs: List[ChunkedBinaryExtraction] = reverbExtractor.extract(s).toList
         val confs: List[Double] = extrs map reverbConfidence.getConf
