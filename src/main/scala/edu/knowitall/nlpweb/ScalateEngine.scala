@@ -1,4 +1,4 @@
-package edu.washington.cs.knowitall.nlpweb
+package edu.knowitall.nlpweb
 
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy

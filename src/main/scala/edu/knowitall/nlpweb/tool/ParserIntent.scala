@@ -1,12 +1,12 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import scala.collection.JavaConversions.asJavaCollection
 import common.Timing
-import edu.washington.cs.knowitall.tool.parse.{DependencyParser, MaltParser, ClearParser}
-import edu.washington.cs.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
-import edu.washington.cs.knowitall.tool.stem.MorphaStemmer
+import edu.knowitall.tool.parse.{DependencyParser, MaltParser, ClearParser}
+import edu.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
+import edu.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
 import org.apache.commons.codec.net.URLCodec
 

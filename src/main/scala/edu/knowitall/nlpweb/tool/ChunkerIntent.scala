@@ -1,13 +1,13 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import scala.Array.canBuildFrom
 import common.Timing
-import edu.washington.cs.knowitall.nlpweb.ToolIntent
-import edu.washington.cs.knowitall.tool.chunk.OpenNlpChunker
-import edu.washington.cs.knowitall.tool.chunk.Chunker
-import edu.washington.cs.knowitall.tool.chunk.ChunkedToken
+import edu.knowitall.nlpweb.ToolIntent
+import edu.knowitall.tool.chunk.OpenNlpChunker
+import edu.knowitall.tool.chunk.Chunker
+import edu.knowitall.tool.chunk.ChunkedToken
 import unfiltered.request.HttpRequest
 import com.googlecode.whatswrong.NLPInstance
 

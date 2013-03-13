@@ -1,14 +1,14 @@
-package edu.washington.cs.knowitall.nlpweb
+package edu.knowitall.nlpweb
 
-import edu.washington.cs.knowitall.nlpweb.persist.Database
-import edu.washington.cs.knowitall.nlpweb.tool.ChunkerIntent
-import edu.washington.cs.knowitall.nlpweb.tool.ConstituencyParserIntent
-import edu.washington.cs.knowitall.nlpweb.tool.ExtractorIntent
-import edu.washington.cs.knowitall.nlpweb.tool.ParserIntent
-import edu.washington.cs.knowitall.nlpweb.tool.PostaggerIntent
-import edu.washington.cs.knowitall.nlpweb.tool.SentencerIntent
-import edu.washington.cs.knowitall.nlpweb.tool.StemmerIntent
-import edu.washington.cs.knowitall.nlpweb.tool.TokenizerIntent
+import edu.knowitall.nlpweb.persist.Database
+import edu.knowitall.nlpweb.tool.ChunkerIntent
+import edu.knowitall.nlpweb.tool.ConstituencyParserIntent
+import edu.knowitall.nlpweb.tool.ExtractorIntent
+import edu.knowitall.nlpweb.tool.ParserIntent
+import edu.knowitall.nlpweb.tool.PostaggerIntent
+import edu.knowitall.nlpweb.tool.SentencerIntent
+import edu.knowitall.nlpweb.tool.StemmerIntent
+import edu.knowitall.nlpweb.tool.TokenizerIntent
 import scopt.immutable.OptionParser
 import unfiltered.filter.Intent
 import unfiltered.jetty.ContextBuilder
@@ -18,7 +18,7 @@ import unfiltered.request.Path
 import unfiltered.request.Seg
 import unfiltered.response.HtmlContent
 import unfiltered.scalate.Scalate
-import edu.washington.cs.knowitall.nlpweb.tool.SrlIntent
+import edu.knowitall.nlpweb.tool.SrlIntent
 
 object NlpWeb extends App with BasePage {
   val tools = Iterable(

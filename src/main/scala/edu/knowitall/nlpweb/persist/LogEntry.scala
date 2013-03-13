@@ -1,4 +1,4 @@
-package edu.washington.cs.knowitall.nlpweb.persist
+package edu.knowitall.nlpweb.persist
 
 import org.orbroker.Row
 import org.orbroker.RowExtractor

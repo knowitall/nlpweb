@@ -1,11 +1,11 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 
-import edu.washington.cs.knowitall.nlpweb.persist.LogEntry
+import edu.knowitall.nlpweb.persist.LogEntry
 import unfiltered.request._
 import unfiltered.filter.Intent
 import unfiltered.response.Ok
-import edu.washington.cs.knowitall.nlpweb.persist.Param
+import edu.knowitall.nlpweb.persist.Param
 import org.slf4j.LoggerFactory
 
 abstract class ToolIntent(val path: String, val tools: List[String]) extends BasePage {

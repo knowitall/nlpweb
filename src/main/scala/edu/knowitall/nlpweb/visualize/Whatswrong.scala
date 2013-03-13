@@ -1,21 +1,21 @@
-package edu.washington.cs.knowitall.nlpweb.visualize
+package edu.knowitall.nlpweb.visualize
 
 import java.awt.image.BufferedImage
 import java.io.File
 import com.googlecode.whatswrong.{ NLPInstance, SingleSentenceRenderer, TokenProperty }
-import edu.washington.cs.knowitall.tool.chunk.{ ChunkedToken, OpenNlpChunker }
-import edu.washington.cs.knowitall.tool.postag.PostaggedToken
-import edu.washington.cs.knowitall.tool.tokenize.Token
+import edu.knowitall.tool.chunk.{ ChunkedToken, OpenNlpChunker }
+import edu.knowitall.tool.postag.PostaggedToken
+import edu.knowitall.tool.tokenize.Token
 import javax.imageio.ImageIO
-import edu.washington.cs.knowitall.tool.parse.graph.DependencyGraph
-import edu.washington.cs.knowitall.tool.parse.graph.DependencyNode
-import edu.washington.cs.knowitall.tool.parse.MaltParser
+import edu.knowitall.tool.parse.graph.DependencyGraph
+import edu.knowitall.tool.parse.graph.DependencyNode
+import edu.knowitall.tool.parse.MaltParser
 import java.io.ByteArrayOutputStream
 import java.util.prefs.Base64
 import org.apache.commons.codec.binary.Base64OutputStream
-import edu.washington.cs.knowitall.common.Resource
-import edu.washington.cs.knowitall.tool.srl.Frame
-import edu.washington.cs.knowitall.nlpweb.tool.SrlIntent.SrlPackage
+import edu.knowitall.common.Resource
+import edu.knowitall.tool.srl.Frame
+import edu.knowitall.nlpweb.tool.SrlIntent.SrlPackage
 import java.awt.Color
 
 object Whatswrong {

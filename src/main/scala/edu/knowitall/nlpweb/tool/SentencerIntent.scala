@@ -1,10 +1,10 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import common.Timing
 import unfiltered.request.HttpRequest
-import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
+import edu.knowitall.tool.sentence.OpenNlpSentencer
 
 object SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."

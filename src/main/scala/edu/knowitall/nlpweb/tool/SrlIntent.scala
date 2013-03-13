@@ -1,14 +1,14 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import common.Timing
 import unfiltered.request.HttpRequest
-import edu.washington.cs.knowitall.tool.sentence.OpenNlpSentencer
-import edu.washington.cs.knowitall.tool.srl.ClearSrl
-import edu.washington.cs.knowitall.tool.srl.Frame
-import edu.washington.cs.knowitall.tool.srl.FrameHierarchy
-import edu.washington.cs.knowitall.tool.parse.graph.DependencyGraph
+import edu.knowitall.tool.sentence.OpenNlpSentencer
+import edu.knowitall.tool.srl.ClearSrl
+import edu.knowitall.tool.srl.Frame
+import edu.knowitall.tool.srl.FrameHierarchy
+import edu.knowitall.tool.parse.graph.DependencyGraph
 
 object SrlIntent extends ToolIntent("srl", List("clear")) {
 

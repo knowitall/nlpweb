@@ -1,4 +1,4 @@
-package edu.washington.cs.knowitall.nlpweb
+package edu.knowitall.nlpweb
 
 import java.io.PrintWriter
 import java.net.URLConnection

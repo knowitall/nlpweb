@@ -1,9 +1,9 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb.tool
 
 import scala.Array.canBuildFrom
-import edu.washington.cs.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
-import edu.washington.cs.knowitall.nlpweb.ToolIntent
+import edu.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
+import edu.knowitall.nlpweb.ToolIntent
 import unfiltered.request.HttpRequest
 
 object StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {

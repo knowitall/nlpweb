@@ -1,13 +1,13 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import scala.Array.canBuildFrom
 import common.Timing
-import edu.washington.cs.knowitall.tool.tokenize.StanfordTokenizer
-import edu.washington.cs.knowitall.tool.tokenize.OpenNlpTokenizer
+import edu.knowitall.tool.tokenize.StanfordTokenizer
+import edu.knowitall.tool.tokenize.OpenNlpTokenizer
 import unfiltered.request.HttpRequest
-import edu.washington.cs.knowitall.tool.tokenize.Token
+import edu.knowitall.tool.tokenize.Token
 import java.awt.image.BufferedImage
 
 object TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {

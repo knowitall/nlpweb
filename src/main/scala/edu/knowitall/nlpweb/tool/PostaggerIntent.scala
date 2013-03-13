@@ -1,12 +1,12 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import scala.Array.canBuildFrom
 import common.Timing
-import edu.washington.cs.knowitall.tool.postag.OpenNlpPostagger
-import edu.washington.cs.knowitall.tool.postag.StanfordPostagger
-import edu.washington.cs.knowitall.tool.postag.PostaggedToken
+import edu.knowitall.tool.postag.OpenNlpPostagger
+import edu.knowitall.tool.postag.StanfordPostagger
+import edu.knowitall.tool.postag.PostaggedToken
 import unfiltered.request.HttpRequest
 
 object PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford")) {

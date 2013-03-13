@@ -1,11 +1,11 @@
-package edu.washington.cs.knowitall.nlpweb.persist
+package edu.knowitall.nlpweb.persist
 
 import org.orbroker._
 import org.orbroker.config._
 import org.orbroker.conv.BigDecimalConv
 import java.io.File
 import java.sql.DriverManager
-import edu.washington.cs.knowitall.common.Resource
+import edu.knowitall.common.Resource
 
 object Database {
   val jdbcUrl = "jdbc:derby:nlpdb"

@@ -1,9 +1,9 @@
-package edu.washington.cs.knowitall
+package edu.knowitall
 package nlpweb
 package tool
 
 import common.Timing
-import edu.washington.cs.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
+import edu.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
 import unfiltered.request.HttpRequest
 
 object ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
