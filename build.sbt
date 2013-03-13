@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
     "org.apache.derby" % "derby" % "10.9.1.0",
     "org.riedelcastro" % "whatswrong" % "0.2.4")
 
-mainClass in assembly := Some("edu.washington.cs.knowitall.nlpweb.NlpWeb")
+mainClass in assembly := Some("edu.knowitall.nlpweb.NlpWeb")
 
 mergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) =>
