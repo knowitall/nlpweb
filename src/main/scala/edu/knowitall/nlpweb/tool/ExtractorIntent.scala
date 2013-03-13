@@ -3,7 +3,6 @@ package nlpweb
 package tool
 
 import scala.Array.canBuildFrom
-
 import common.Timing
 import edu.knowitall.chunkedextractor.BinaryExtractionInstance
 import edu.knowitall.chunkedextractor.Nesty
@@ -20,6 +19,11 @@ import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.tokenize.Token
 import knowitall.srl.SrlExtractor
+import edu.knowitall.ollie.Attribution
+import edu.knowitall.ollie.EnablingCondition
+import edu.knowitall.openparse.extract.Extraction.ClausalComponent
+import edu.knowitall.openparse.extract.Extraction.AdverbialModifier
+import edu.knowitall.tool.chunk.Chunker
 
 object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie-clear", "ollie-malt", "srl")) {
   override val info = "Enter sentences from which to extract relations, one per line."
@@ -45,12 +49,21 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
 
   def getExtractor(name: String): Seq[Lemmatized[ChunkedToken]] => List[(String, Iterable[Extraction])] = {
     def tripleChunked(conf: Double)(inst: BinaryExtractionInstance[ChunkedToken]): Extraction = 
-      new Extraction(conf, inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
-    def tripleOpenParse(conf: Double)(extr: openparse.extract.DetailedExtraction): Extraction =
-      new Extraction(conf, extr.arg1Text, extr.relText, extr.arg2Text)
-    def tripleOllie(conf: Double)(inst: ollie.OllieExtractionInstance): Extraction =
-      new Extraction(conf, inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
-
+      new Extraction(conf, "", inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
+    def tripleOpenParse(conf: Double)(extr: openparse.extract.DetailedExtraction): Extraction = {
+      val context = Seq(extr.modifier, extr.clausal).flatten map {
+        case modifier: AdverbialModifier => "Mod: " + modifier.text
+        case enabler: ClausalComponent => "Clause: " + enabler.text
+      }
+      new Extraction(conf, "", extr.arg1Text, extr.relText, extr.arg2Text)
+    }
+    def tripleOllie(conf: Double)(inst: ollie.OllieExtractionInstance): Extraction = {
+      val context = Seq(inst.extr.attribution, inst.extr.enabler).flatten map {
+        case attribution: Attribution => "Attr: " + attribution.text
+        case enabler: EnablingCondition => "Cond: " + enabler.text
+      }
+      new Extraction(conf, context.mkString("; "), inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
+    }
     s: Seq[Lemmatized[ChunkedToken]] => List((name, name match {
       case "ollie-clear" => {
         val extrs = ollieExtractor.extract(ParserIntent.clearParser.dependencyGraph(s.iterator.map(_.string).mkString(" "))).toList
@@ -74,7 +87,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
         val parser = ParserIntent.clearParser
         val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
         srlExtractor.apply(graph).map { extraction =>
-          new Extraction(0.0, extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString(", "))
+          new Extraction(0.0, "", extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString(", "))
         }
       }
     }))
@@ -93,14 +106,19 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
 
     def chunk(string: String) = chunker.synchronized {
       string.split("\n").map {
-        string => chunker.chunk(string.trim) map MorphaStemmer.lemmatizeToken
+        string => Chunker.joinOf(chunker.chunk(string.trim)) map MorphaStemmer.lemmatizeToken
       }
     }
 
     def buildTable(set: ExtractionSet) = {
-      "<table><tr><th colspan=\"4\">" + set.sentence + "</th></tr>" + set.extractions.map(extractions => "<tr><th colspan=\"4\">" + extractions._1 + " extractions" + "</th></tr>" + extractions._2.map {
-        case Extraction(conf, _, arg1, rel, arg2) =>
-          "<tr><td>" + ("%1.2f" format conf) + "</td><td>" + arg1.string + "</td><td>" + rel.string + "</td><td>" + arg2.string + "</td></tr>"
+      "<table><tr>" +
+        "<th colspan=\"5\">" + set.sentence + "</th>" +
+      "</tr>" +
+      "<tr>" + Seq("Confidence", "Context", "Argument 1", "Relation", "Argument 2(s)").map("<th>" + _ + "</th>").mkString("") + "</tr>" +
+      set.extractions.map(extractions => "<tr><th colspan=\"5\">" + extractions._1 + " extractions" + "</th></tr>" +
+      extractions._2.map {
+        case Extraction(conf, context, arg1, rel, arg2) =>
+          "<tr>" + Seq("%1.2f" format conf, context, arg1.string, rel.string, arg2.string).map("<td>" + _ + "</td>").mkString("") + "</tr>"
       }.mkString("\n")).mkString("\n") + "</table><br/><br/>"
     }
 
@@ -108,8 +126,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
 
     // create an extractor that extracts for all checked extractors
     def extractor(sentence: Seq[Lemmatized[ChunkedToken]]) =
-      (for {
-        key <- params.keys; if key.startsWith("check_")
+      (for { key <- params.keys; if key.startsWith("check_")
         extrs <- getExtractor(key.drop(6))(sentence)
       } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
@@ -121,7 +138,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
   }
 }
 
-case class Extraction(conf: Double, context: Option[Part] = None, arg1: Part, rel: Part, arg2: Part) {
-  def this(conf: Double, arg1: String, rel: String, arg2: String) = this(conf, None, new Part(arg1), new Part(rel), new Part(arg2))
+case class Extraction(conf: Double, context: String = "", arg1: Part, rel: Part, arg2: Part) {
+  def this(conf: Double, context: String, arg1: String, rel: String, arg2: String) = this(conf, context, new Part(arg1), new Part(rel), new Part(arg2))
 }
 case class Part(string: String) 
