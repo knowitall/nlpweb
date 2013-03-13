@@ -87,7 +87,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
         val parser = ParserIntent.clearParser
         val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
         srlExtractor.apply(graph).map { extraction =>
-          new Extraction(0.0, "", extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString(", "))
+          new Extraction(0.0, "", extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString("; "))
         }
       }
     }))
