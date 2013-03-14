@@ -131,7 +131,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
       } yield (extrs)).toSeq.sortBy { case (extr, extrs) => this.tools.indexOf(extr) }
 
     val (chunkTime, chunked) = Timing.time(chunk(text))
-    val (extractionTime, extractions) = Timing.time(chunked.map(chunked => ExtractionSet(chunked.map(_.token).mkString(" "), extractor(chunked))))
+    val (extractionTime, extractions) = Timing.time(chunked.map(chunked => ExtractionSet(chunked.map(_.token.string).mkString(" "), extractor(chunked))))
     ("chunking: " + Timing.Milliseconds.format(chunkTime) + "\n" +
       "extracting: " + Timing.Milliseconds.format(extractionTime),
       "<p>" + extractions.map(_.extractions).flatten.map(_._2).flatten.size + " extraction(s):</p>" + extractions.map(buildTable(_)).mkString("\n"))
