@@ -13,7 +13,7 @@ form(method="POST")
   p= info
   - id match
     - case Some(id) =>
-      a(href="/log/#{id}") (link to this page)
+      a(href="/log/#{id.toString}") (link to this page)
       br
       br
     - case None =>
