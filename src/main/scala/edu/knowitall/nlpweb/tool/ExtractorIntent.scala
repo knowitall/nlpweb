@@ -18,14 +18,15 @@ import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.stem.Lemmatized
 import edu.knowitall.tool.stem.MorphaStemmer
 import edu.knowitall.tool.tokenize.Token
-import knowitall.srl.SrlExtractor
+import edu.knowitall.srl.SrlExtractor
+import edu.knowitall.srl.SrlExtraction
 import edu.knowitall.ollie.Attribution
 import edu.knowitall.ollie.EnablingCondition
 import edu.knowitall.openparse.extract.Extraction.ClausalComponent
 import edu.knowitall.openparse.extract.Extraction.AdverbialModifier
 import edu.knowitall.tool.chunk.Chunker
 
-object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie-clear", "ollie-malt", "srl")) {
+object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun", "nesty", "openparse", "ollie-clear", "ollie-malt", "srl", "srl-triple")) {
   override val info = "Enter sentences from which to extract relations, one per line."
 
   lazy val ollieExtractor = new Ollie()
@@ -48,7 +49,7 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
   }
 
   def getExtractor(name: String): Seq[Lemmatized[ChunkedToken]] => List[(String, Iterable[Extraction])] = {
-    def tripleChunked(conf: Double)(inst: BinaryExtractionInstance[ChunkedToken]): Extraction = 
+    def tripleChunked(conf: Double)(inst: BinaryExtractionInstance[ChunkedToken]): Extraction =
       new Extraction(conf, "", inst.extr.arg1.text, inst.extr.rel.text, inst.extr.arg2.text)
     def tripleOpenParse(conf: Double)(extr: openparse.extract.DetailedExtraction): Extraction = {
       val context = Seq(extr.modifier, extr.clausal).flatten map {
@@ -56,6 +57,18 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
         case enabler: ClausalComponent => "Clause: " + enabler.text
       }
       new Extraction(conf, "", extr.arg1Text, extr.relText, extr.arg2Text)
+    }
+    def tripleSrl(extr: SrlExtraction) = {
+      var context = Seq.empty[String]
+
+      if (extr.negated) {
+        context :+= "neg"
+      }
+      if (extr.passive) {
+        context :+= "passive"
+      }
+
+      new Extraction(0.0, context.mkString("{", ", ", "}"), extr.arg1.text, extr.relation.text, extr.arg2s.map(_.text).mkString("; "))
     }
     def tripleOllie(conf: Double)(inst: ollie.OllieExtractionInstance): Extraction = {
       val context = Seq(inst.extr.attribution, inst.extr.enabler).flatten map {
@@ -86,9 +99,12 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
       case "srl" => {
         val parser = ParserIntent.clearParser
         val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
-        srlExtractor.apply(graph).map { extraction =>
-          new Extraction(0.0, "", extraction.arg1.text, extraction.relation.text, extraction.arg2s.map(_.text).mkString("; "))
-        }
+        srlExtractor.apply(graph) map tripleSrl
+      }
+      case "srl-triple" => {
+        val parser = ParserIntent.clearParser
+        val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
+        srlExtractor.apply(graph).flatMap(_.triplize(true)) map tripleSrl
       }
     }))
   }
