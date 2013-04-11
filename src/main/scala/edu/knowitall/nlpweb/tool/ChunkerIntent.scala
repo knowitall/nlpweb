@@ -15,7 +15,7 @@ object ChunkerIntent extends ToolIntent("chunker", List("opennlp")) {
   override val info = "Enter sentences to be chunked, one per line."
   lazy val opennlpChunker = new OpenNlpChunker()
 
-  val chunkers = tools
+  def chunkers = tools
   def getChunker(chunker: String): Chunker =
     chunker match {
       case "opennlp" => opennlpChunker

@@ -70,7 +70,7 @@ object DotIntent extends BasePage {
         }
       }
     } catch {
-      case e => logger.error("Could not establish dot formats.", e); List.empty
+      case e: Throwable => logger.error("Could not establish dot formats.", e); List.empty
     }
   }
 

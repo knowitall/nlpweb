@@ -99,12 +99,12 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
       case "srl" => {
         val parser = ParserIntent.clearParser
         val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
-        srlExtractor.apply(graph) map tripleSrl
+        srlExtractor.apply(graph).map(_.extr) map tripleSrl
       }
       case "srl-triple" => {
         val parser = ParserIntent.clearParser
         val graph = parser.dependencyGraph(s.iterator.map(_.token.string).mkString(" "))
-        srlExtractor.apply(graph).flatMap(_.triplize(true)) map tripleSrl
+        srlExtractor.apply(graph).flatMap(_.triplize(true)).map(_.extr) map tripleSrl
       }
     }))
   }
@@ -157,4 +157,4 @@ object ExtractorIntent extends ToolIntent("extractor", List("reverb", "relnoun",
 case class Extraction(conf: Double, context: String = "", arg1: Part, rel: Part, arg2: Part) {
   def this(conf: Double, context: String, arg1: String, rel: String, arg2: String) = this(conf, context, new Part(arg1), new Part(rel), new Part(arg2))
 }
-case class Part(string: String) 
+case class Part(string: String)

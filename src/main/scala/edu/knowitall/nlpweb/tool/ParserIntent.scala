@@ -9,15 +9,28 @@ import edu.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
 import edu.knowitall.tool.stem.MorphaStemmer
 import unfiltered.request.HttpRequest
 import org.apache.commons.codec.net.URLCodec
+import edu.knowitall.tool.parse.RemoteDependencyParser
+import edu.knowitall.tool.parse.StanfordParser
+import org.slf4j.LoggerFactory
 
-object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserialize")) {
+object ParserIntent extends ToolIntent("parser", List("stanford", "malt", "clear", "deserialize")) {
   implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
 
-  val urlCodec = new URLCodec
+  def loadParser(name: String, instantiate: => DependencyParser) = {
+    NlpWeb.remotes.get(name) match {
+      case Some(url) =>
+        logger.info("Loading remote " + name + ": " + url)
+        new RemoteDependencyParser(url.toString)
+      case None =>
+        logger.info("Instantiating " + name)
+        instantiate
+    }
+  }
 
-  lazy val clearParser = new ClearParser()
-  lazy val maltParser = new MaltParser()
+  lazy val clearParser = loadParser("ClearParser", new ClearParser())
+  lazy val maltParser = loadParser("MaltParser", new MaltParser())
+  lazy val stanfordParser = loadParser("StanfordParser", new StanfordParser())
   lazy val deserializeParser = new DependencyParser {
     override def dependencyGraph(pickled: String) =
       DependencyGraph.deserialize(pickled)
@@ -29,6 +42,7 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
   val parsers = tools
   def getParser(parser: String): DependencyParser =
     parser match {
+      case "stanford" => stanfordParser
       case "clear" => clearParser
       case "malt" => maltParser
       case "deserialize" => deserializeParser
@@ -61,7 +75,7 @@ object ParserIntent extends ToolIntent("parser", List("malt", "clear", "deserial
       "<img src=\"data:image/png;base64," + b64.string + "\">"
     }
     catch {
-      case e => System.err.println("Could not build image for: " + graph.serialize); ""
+      case e: Throwable => System.err.println("Could not build image for: " + graph.serialize); ""
     }
   }
 

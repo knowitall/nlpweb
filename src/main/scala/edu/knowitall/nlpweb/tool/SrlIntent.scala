@@ -41,7 +41,7 @@ object SrlIntent extends ToolIntent("srl", List("clear")) {
       "<img src=\"data:image/png;base64," + b64.string + "\">"
     }
     catch {
-      case e => System.err.println("Could not build image for: " + srl); ""
+      case e: Throwable => System.err.println("Could not build image for: " + srl); ""
     }
   }
 

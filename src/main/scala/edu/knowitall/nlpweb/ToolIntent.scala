@@ -7,10 +7,13 @@ import unfiltered.filter.Intent
 import unfiltered.response.Ok
 import edu.knowitall.nlpweb.persist.Param
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 abstract class ToolIntent(val path: String, val tools: List[String]) extends BasePage {
+  val logger = LoggerFactory.getLogger(this.getClass)
   def intent = Intent {
     case req @ GET(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
+      logger.info("Serving page: " + tool)
       Ok ~> basicPage(req,
         name = title(req),
         info = info,
@@ -20,6 +23,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         result = "")
 
     case req @ GET(Path(Seg(`path` :: tool :: text :: Nil))) if (tools contains tool) =>
+      logger.info("Serving page '" + tool + "' with text: " + text)
       Ok ~> basicPage(req,
         name = title(req),
         info = info,
@@ -41,6 +45,12 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
           case e => ToolIntent.logger.error("Could not log request", e); None
         }
       val text = req.parameterValues("text").headOption.getOrElse("")
+      def summarize(length: Int)(text: String) = {
+        val cleaned = text.replaceAll("\n", " ")
+        if (cleaned.length > length) cleaned.take(length) + "..."
+        else cleaned
+      }
+      logger.info("Processing with '" + tool + "': " + summarize(40)(text))
       val (stats, result) = post(req, tool, text)
       Ok ~> basicPage(req,
         name = title(req),
