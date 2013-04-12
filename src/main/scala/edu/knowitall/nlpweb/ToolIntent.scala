@@ -72,6 +72,7 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
     }
 
     case req @ POST(Path(Seg(`path` :: tool :: Nil))) if (shortNames contains tool) =>
+      val params = req.parameterNames.map { case (k) => persist.Param(k, req.parameterValues(k).head) }.toIndexedSeq :+ Param("tool", tool)
       val entry =
         try {
           Some(LogEntry(None, path, tool, params).persist())
