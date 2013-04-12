@@ -27,11 +27,10 @@ extends ToolIntent[ConstituencyParser]("constituency",
     val buffer = new StringBuffer()
     graph.printDOT(buffer)
     val dot = buffer.toString
-      .replaceAll("""\\n""", "")
-      .replaceAll("""\s+""", " ")
-      .replaceAll("\"", """%22""")
+
+    val base64Image = DotIntent.dotbase64(dot, "png")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
-     "<img src=\"/dot/png/" + dot + "\" />")
+     "<img src=\"data:image/png;base64," + base64Image + "\" />")
   }
 }
