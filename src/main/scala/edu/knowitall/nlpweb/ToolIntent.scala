@@ -8,11 +8,46 @@ import unfiltered.response.Ok
 import edu.knowitall.nlpweb.persist.Param
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import java.net.URL
+import org.apache.commons.lang.NotImplementedException
 
-abstract class ToolIntent(val path: String, val tools: List[String]) extends BasePage {
+abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, String)]) extends BasePage {
   val logger = LoggerFactory.getLogger(this.getClass)
+
+  for ((short, long) <- toolNames) {
+    require(constructors.isDefinedAt(long), "No constructor for: " + long)
+  }
+
+  def constructors: PartialFunction[String, T]
+  def remote(url: URL): T = throw new NotImplementedException("No remote implementation for: " + url)
+
+  def shortNames = toolNames.iterator.map(_._1)
+  def longNames = toolNames.iterator.map(_._2)
+  val nameMap = toolNames.toMap
+
+  var tools: Map[String, T] = Map.empty[String, T]
+  def loadTool(name: String, instantiate: =>T, remote: URL=>T) = {
+    val tool = NlpWeb.remotes.get(name) match {
+      case Some(url) =>
+        logger.info("Loading remote " + name + ": " + url)
+        remote(url)
+      case None =>
+        logger.info("Instantiating " + name)
+        instantiate
+    }
+
+    tools += name -> tool
+  }
+  def getTool(name: String): T = tools.get(name) match {
+    case Some(tool) => tool
+    case None =>
+      val constructed = constructors(name)
+      tools += name -> constructed
+      constructed
+  }
+
   def intent = Intent {
-    case req @ GET(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
+    case req @ GET(Path(Seg(`path` :: tool :: Nil))) if (shortNames contains tool) =>
       logger.info("Serving page: " + tool)
       Ok ~> basicPage(req,
         name = title(req),
@@ -22,7 +57,7 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         stats = "",
         result = "")
 
-    case req @ GET(Path(Seg(`path` :: tool :: text :: Nil))) if (tools contains tool) =>
+    case req @ GET(Path(Seg(`path` :: tool :: text :: Nil))) if (shortNames contains tool) =>
       logger.info("Serving page '" + tool + "' with text: " + text)
       Ok ~> basicPage(req,
         name = title(req),
@@ -32,12 +67,11 @@ abstract class ToolIntent(val path: String, val tools: List[String]) extends Bas
         stats = "",
         result = "")
 
-	case req@GET(Path(Seg(`path` :: Nil))) => {
-	  Ok ~> indexPage(req, tools.map(path + "/" + _.toString + "/"))
-	}
+    case req@GET(Path(Seg(`path` :: Nil))) => {
+      Ok ~> indexPage(req, shortNames.map(path + "/" + _.toString + "/").toList)
+    }
 
-    case req @ POST(Path(Seg(`path` :: tool :: Nil))) if (tools contains tool) =>
-      val params = req.parameterNames.map { case (k) => persist.Param(k, req.parameterValues(k).head) }.toIndexedSeq :+ Param("tool", tool)
+    case req @ POST(Path(Seg(`path` :: tool :: Nil))) if (shortNames contains tool) =>
       val entry =
         try {
           Some(LogEntry(None, path, tool, params).persist())

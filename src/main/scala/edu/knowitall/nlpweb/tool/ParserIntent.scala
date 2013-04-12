@@ -2,51 +2,48 @@ package edu.knowitall
 package nlpweb
 package tool
 
+import scala.annotation.migration
 import scala.collection.JavaConversions.asJavaCollection
+
 import common.Timing
-import edu.knowitall.tool.parse.{DependencyParser, MaltParser, ClearParser}
-import edu.knowitall.tool.parse.graph.{DependencyGraph, DependencyPattern}
-import edu.knowitall.tool.stem.MorphaStemmer
-import unfiltered.request.HttpRequest
-import org.apache.commons.codec.net.URLCodec
+import edu.knowitall.nlpweb.DotIntent
+import edu.knowitall.nlpweb.ToolIntent
+import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
+import edu.knowitall.tool.parse.ClearParser
+import edu.knowitall.tool.parse.DependencyParser
+import edu.knowitall.tool.parse.MaltParser
 import edu.knowitall.tool.parse.RemoteDependencyParser
 import edu.knowitall.tool.parse.StanfordParser
-import org.slf4j.LoggerFactory
+import edu.knowitall.tool.parse.graph.DependencyGraph
+import edu.knowitall.tool.parse.graph.DependencyPattern
+import edu.knowitall.tool.stem.MorphaStemmer
+import visualize.Whatswrong.Base64String
+import visualize.Whatswrong.CanWrite
+import visualize.Whatswrong.writeGraphic2Base64
 
-object ParserIntent extends ToolIntent("parser", List("stanford", "malt", "clear", "deserialize")) {
+object ParserIntent
+extends ToolIntent[DependencyParser]("parser",
+    List(
+      "stanford" -> "StanfordParser",
+      "malt" -> "MaltParser",
+      "clear" -> "ClearParser",
+      "deserialize" -> "DeserializeParser")) {
   implicit def stemmer = MorphaStemmer
   override val info = "Enter a single sentence to be parsed."
 
-  def loadParser(name: String, instantiate: => DependencyParser) = {
-    NlpWeb.remotes.get(name) match {
-      case Some(url) =>
-        logger.info("Loading remote " + name + ": " + url)
-        new RemoteDependencyParser(url.toString)
-      case None =>
-        logger.info("Instantiating " + name)
-        instantiate
+  def constructors: PartialFunction[String, DependencyParser] = {
+    case "StanfordParser" => new StanfordParser()
+    case "MaltParser" => new MaltParser()
+    case "ClearParser" => new ClearParser()
+    case "DeserializeParser" => new DependencyParser {
+      override def dependencyGraph(pickled: String) =
+        DependencyGraph.deserialize(pickled)
+
+      override def dependencies(pickled: String) =
+        DependencyGraph.deserialize(pickled).dependencies
     }
   }
-
-  lazy val clearParser = loadParser("ClearParser", new ClearParser())
-  lazy val maltParser = loadParser("MaltParser", new MaltParser())
-  lazy val stanfordParser = loadParser("StanfordParser", new StanfordParser())
-  lazy val deserializeParser = new DependencyParser {
-    override def dependencyGraph(pickled: String) =
-      DependencyGraph.deserialize(pickled)
-
-    override def dependencies(pickled: String) =
-      DependencyGraph.deserialize(pickled).dependencies
-  }
-
-  val parsers = tools
-  def getParser(parser: String): DependencyParser =
-    parser match {
-      case "stanford" => stanfordParser
-      case "clear" => clearParser
-      case "malt" => maltParser
-      case "deserialize" => deserializeParser
-    }
+  override def remote(url: java.net.URL) = new RemoteDependencyParser(url.toString)
 
   override def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = {
     val pattern =
@@ -79,8 +76,8 @@ object ParserIntent extends ToolIntent("parser", List("stanford", "malt", "clear
     }
   }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val parser = getParser(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val parser = getTool(nameMap(shortToolName))
     val pattern = ""
     var (parseTime, graph) = parser.synchronized {
       Timing.time(

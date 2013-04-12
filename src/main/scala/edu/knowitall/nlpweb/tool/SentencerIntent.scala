@@ -3,17 +3,20 @@ package nlpweb
 package tool
 
 import common.Timing
-import unfiltered.request.HttpRequest
+import edu.knowitall.nlpweb.ToolIntent
+import edu.knowitall.tool.segment.Segmenter
 import edu.knowitall.tool.sentence.OpenNlpSentencer
 
-object SentencerIntent extends ToolIntent("sentencer", List("opennlp")) {
+object SentencerIntent
+extends ToolIntent[Segmenter]("sentencer", List("opennlp" -> "OpenNlpSentencer")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
 
-  lazy val sentencers = Map(
-    "opennlp" -> new OpenNlpSentencer())
+  def constructors: PartialFunction[String, Segmenter] = {
+    case "OpenNlpSentencer" => new OpenNlpSentencer()
+  }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val sentencer = sentencers(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val sentencer = getTool(nameMap(shortToolName))
 
     val (sentencerTime, sentenced) = Timing.time(sentencer.segmentTexts(text))
     ("time: " + Timing.Milliseconds.format(sentencerTime),

@@ -15,7 +15,6 @@ import java.util.prefs.Base64
 import org.apache.commons.codec.binary.Base64OutputStream
 import edu.knowitall.common.Resource
 import edu.knowitall.tool.srl.Frame
-import edu.knowitall.nlpweb.tool.SrlIntent.SrlPackage
 import java.awt.Color
 
 object Whatswrong {

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory
 
 object NlpWeb extends App with BasePage {
   val logger = LoggerFactory.getLogger(NlpWeb.getClass)
-  val tools = Iterable(
+  val tools: Map[String, ToolIntent[_]] = Iterable[ToolIntent[_]](
     StemmerIntent,
     TokenizerIntent,
     PostaggerIntent,
@@ -37,7 +37,7 @@ object NlpWeb extends App with BasePage {
     SentencerIntent,
     ExtractorIntent,
     SrlIntent,
-    ConstituencyParserIntent).map(intent => (intent.path, intent)).toMap
+    ConstituencyParserIntent).map(intent => intent.path -> intent).toMap
 
   case class Config(port: Int = 8080,
     remotesUrl: Option[URL] = None) {

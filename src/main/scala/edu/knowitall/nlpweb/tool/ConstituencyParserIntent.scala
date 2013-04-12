@@ -3,23 +3,23 @@ package nlpweb
 package tool
 
 import common.Timing
-import edu.knowitall.tool.parse.{ConstituencyParser, OpenNlpParser, StanfordParser}
-import unfiltered.request.HttpRequest
+import edu.knowitall.nlpweb.ToolIntent
+import edu.knowitall.tool.parse.ConstituencyParser
+import edu.knowitall.tool.parse.OpenNlpParser
+import edu.knowitall.tool.parse.StanfordParser
 
-object ConstituencyParserIntent extends ToolIntent("constituency", List("stanford", "opennlp")) {
+object ConstituencyParserIntent
+extends ToolIntent[ConstituencyParser]("constituency",
+    List("stanford" -> "StanfordConstituencyParser", "opennlp" -> "OpenNlpConstituencyParser")) {
   override val info = "Enter a single sentence to be parsed."
-  lazy val stanfordParser = new StanfordParser()
-  lazy val openNlpParser = new OpenNlpParser()
 
-  val parsers = tools
-  def getParser(parser: String): ConstituencyParser =
-    parser match {
-      case "stanford" => stanfordParser
-      case "opennlp" => openNlpParser
-    }
+  def constructors: PartialFunction[String, ConstituencyParser] = {
+    case "OpenNlpConstituencyParser" => new OpenNlpParser()
+    case "StanfordConstituencyParser" => new StanfordParser()
+  }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val parser = getParser(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val parser = getTool(nameMap(shortToolName))
     var (parseTime, graph) = parser.synchronized {
       Timing.time(parser.parse(text))
     }

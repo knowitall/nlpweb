@@ -9,12 +9,17 @@ import edu.knowitall.tool.tokenize.OpenNlpTokenizer
 import unfiltered.request.HttpRequest
 import edu.knowitall.tool.tokenize.Token
 import java.awt.image.BufferedImage
+import edu.knowitall.tool.tokenize.Tokenizer
 
-object TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp")) {
+object TokenizerIntent
+extends ToolIntent[Tokenizer]("tokenizer",
+    List("stanford" -> "StanfordTokenizer", "opennlp" -> "OpenNlpTokenizer")) {
   override val info = "Enter sentences to be tokenized, one per line."
-  lazy val tokenizers = Map(
-    "stanford" -> new StanfordTokenizer(),
-    "opennlp" -> new OpenNlpTokenizer())
+
+  def constructors: PartialFunction[String, Tokenizer] = {
+    case "StanfordTokenizer" => new StanfordTokenizer()
+    case "OpenNlpTokenizer" => new OpenNlpTokenizer()
+  }
 
   def image(tokens: Seq[Token]) = {
     import visualize.Whatswrong._
@@ -22,8 +27,8 @@ object TokenizerIntent extends ToolIntent("tokenizer", List("stanford", "opennlp
     "<img src=\"data:image/png;base64," + b64.string + "\">"
   }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val tokenizer = tokenizers(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val tokenizer = getTool(nameMap(shortToolName))
 
     val lines = text.split("\n")
     val (tokenizeTime, tokenized) = Timing.time(lines.map(tokenizer.tokenize(_)))

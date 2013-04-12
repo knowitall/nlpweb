@@ -6,22 +6,22 @@ import edu.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, St
 import edu.knowitall.nlpweb.ToolIntent
 import unfiltered.request.HttpRequest
 
-object StemmerIntent extends ToolIntent("stemmer", List("morpha", "porter", "english")) {
+object StemmerIntent
+extends ToolIntent[Stemmer]("stemmer",
+    List(
+        "morpha" -> "MorphaStemmer",
+        "porter" -> "PorterStemmer",
+        "english" -> "EnglishStemmer")) {
   override val info = "Enter tokens to stem, seperated by whitespace."
 
-  lazy val morphaStemmer = new MorphaStemmer
-  lazy val porterStemmer = new PorterStemmer
-  lazy val englishStemmer = new EnglishStemmer
+  def constructors: PartialFunction[String, Stemmer] = {
+    case "MorphaStemmer" => new MorphaStemmer()
+    case "PorterStemmer" => new PorterStemmer()
+    case "EnglishStemmer" => new EnglishStemmer()
+  }
 
-  def getStemmer(stemmer: String): Stemmer =
-    stemmer match {
-      case "morpha" => morphaStemmer
-      case "porter" => porterStemmer
-      case "english" => englishStemmer
-    }
-
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val stemmer = getStemmer(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val stemmer = getTool(nameMap(shortToolName))
     ("",
       text.split("\n").map(line =>
         line.split("\\s+").map(stemmer.stem(_)).dropWhile(_ == null).mkString(" ")).mkString("\n"))

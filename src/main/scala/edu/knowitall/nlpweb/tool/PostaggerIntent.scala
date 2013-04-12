@@ -2,18 +2,32 @@ package edu.knowitall
 package nlpweb
 package tool
 
-import scala.Array.canBuildFrom
-import common.Timing
-import edu.knowitall.tool.postag.OpenNlpPostagger
-import edu.knowitall.tool.postag.StanfordPostagger
-import edu.knowitall.tool.postag.PostaggedToken
-import unfiltered.request.HttpRequest
+import java.net.URL
 
-object PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford")) {
+import scala.Array.canBuildFrom
+
+import org.apache.commons.lang.NotImplementedException
+
+import common.Timing
+import edu.knowitall.nlpweb.ToolIntent
+import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
+import edu.knowitall.tool.postag.OpenNlpPostagger
+import edu.knowitall.tool.postag.PostaggedToken
+import edu.knowitall.tool.postag.Postagger
+import edu.knowitall.tool.postag.StanfordPostagger
+import visualize.Whatswrong.Base64String
+import visualize.Whatswrong.CanWrite
+import visualize.Whatswrong.writeGraphic2Base64
+
+object PostaggerIntent
+extends ToolIntent[Postagger]("postagger",
+    List("opennlp" -> "OpenNlpPostagger", "stanford" -> "StanfordPostagger")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
-  lazy val postaggers = Map(
-    "opennlp" -> new OpenNlpPostagger(),
-    "stanford" -> new StanfordPostagger())
+
+  def constructors: PartialFunction[String, Postagger] = {
+    case "OpenNlpPostagger" => new OpenNlpPostagger()
+    case "StanfordPostagger" => new StanfordPostagger()
+  }
 
   def image(tokens: Seq[PostaggedToken]) = {
     import visualize.Whatswrong._
@@ -21,8 +35,8 @@ object PostaggerIntent extends ToolIntent("postagger", List("opennlp", "stanford
     "<img src=\"data:image/png;base64," + b64.string + "\">"
   }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val postagger = postaggers(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val postagger = getTool(nameMap(shortToolName))
 
     val lines = text.split("\n")
     val (postagTime, postaggeds) = Timing.time(lines.map(postagger.postag(_)))

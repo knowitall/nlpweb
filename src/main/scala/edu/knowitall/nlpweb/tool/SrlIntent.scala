@@ -9,21 +9,40 @@ import edu.knowitall.tool.srl.ClearSrl
 import edu.knowitall.tool.srl.Frame
 import edu.knowitall.tool.srl.FrameHierarchy
 import edu.knowitall.tool.parse.graph.DependencyGraph
+import edu.knowitall.tool.srl.RemoteSrl
+import edu.knowitall.tool.parse.DependencyParser
+import edu.knowitall.tool.srl.Srl
 
-object SrlIntent extends ToolIntent("srl", List("clear")) {
+case class SrlPackage(frames: Seq[Frame], graph: DependencyGraph)
+abstract class CompleteSrl {
+  def apply(sentence: String): SrlPackage
+}
+object CompleteSrl {
+  def from(parser: DependencyParser, srl: Srl) = {
+    new CompleteSrl {
+      override def apply(sentence: String) = {
+        val graph = parser(sentence)
+        SrlPackage(srl(graph), graph)
+      }
+    }
+  }
+}
+
+object SrlIntent
+extends ToolIntent[CompleteSrl]("srl", List("clear" -> "ClearSrl")) {
 
   override val info = "Enter a sentence text to be SRL-ed."
-  case class SrlPackage(frames: Seq[Frame], graph: DependencyGraph)
-  type CompleteSrl = String=>SrlPackage
 
   lazy val clearSrl = new ClearSrl()
-
-  def getSrl(name: String): CompleteSrl = name match {
-    case "clear" =>
-      (sentence: String) => {
-        val graph = ParserIntent.clearParser.dependencyGraph(sentence)
-        SrlPackage(clearSrl(graph), graph)
-      }
+  def constructors: PartialFunction[String, CompleteSrl] = {
+    case "ClearSrl" =>
+      val clearParser = ParserIntent.getTool("ClearParser")
+      CompleteSrl.from(clearParser, clearSrl)
+  }
+  override def remote(url: java.net.URL) = {
+    val clearParser = ParserIntent.getTool("ClearParser")
+    val srl = new RemoteSrl(url.toString)
+    CompleteSrl.from(clearParser, srl)
   }
 
   case class FrameSet(sentence: String, frames: Seq[Frame])
@@ -45,8 +64,8 @@ object SrlIntent extends ToolIntent("srl", List("clear")) {
     }
   }
 
-  override def post[A](tool: String, text: String, params: Map[String, String]) = {
-    val srl = getSrl(tool)
+  override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
+    val srl = getTool(nameMap(shortToolName))
 
     val (srlTime, frames) = Timing.time(srl(text))
     val frameSets = Seq(frames)
