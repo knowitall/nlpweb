@@ -1,8 +1,16 @@
 package edu.knowitall.nlpweb
 
+import java.io.File
+import java.io.FileInputStream
 import java.io.PrintWriter
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.net.URLConnection
 import java.net.URLDecoder
+
+import scala.sys.process._
+
+import edu.knowitall.common.Resource
 
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.codec.net.URLCodec
@@ -26,22 +34,20 @@ object DotIntent extends BasePage {
 
   final val DEFAULT_FORMAT="png"
 
-  def dotbin(dot: String, format: String): Array[Byte] = {
-    val p = Runtime.getRuntime().exec("dot -T" + format)
-    val pw = new PrintWriter(p.getOutputStream)
-    try {
-      pw.write(dot)
-    } finally {
-      pw.close()
+  def dotbin(format: String)(dot: String): Array[Byte] = {
+    val process = "dot -T" + format
+    val bos = new ByteArrayOutputStream()
+    val exitCode = process #< new ByteArrayInputStream(dot.getBytes) #> bos !< ProcessLogger(s => ())
+    if (exitCode == 0) {
+      bos.toByteArray()
     }
-
-    // copy the error (if any)
-    IOUtils.copy(p.getErrorStream, System.err)
-    IOUtils.toByteArray(p.getInputStream)
+    else {
+      throw new RuntimeException("Nonzero exit value (" + exitCode + ") for '" + process + "' with: " + dot)
+    }
   }
 
   def dotbase64(dot: String, format: String): String = {
-    base64.encodeToString(dotbin(dot, format)).trim
+    base64.encodeToString(dotbin(format)(dot)).trim
   }
 
   lazy val dotFormats = {
@@ -49,6 +55,7 @@ object DotIntent extends BasePage {
     try {
       val p = Runtime.getRuntime().exec("dot -Tasdf")
       p.getOutputStream().close
+      p.waitFor()
 
       val response = IOUtils.toString(p.getErrorStream)
 
@@ -111,7 +118,7 @@ object DotIntent extends BasePage {
       } else {
         val contentType = guessContentType(format)
         logger.debug("Sending to dot: " + contentType + ": " + dot)
-        val bytes = dotbin(dot, format)
+        val bytes = dotbin(format)(dot)
         new ComposeResponse(ContentType(contentType) ~> ResponseBytes(bytes))
       }
 
@@ -141,17 +148,7 @@ object DotIntent extends BasePage {
       } else {
         val contentType = guessContentType(format)
         logger.debug("Sending to dot: " + contentType + ": " + decoded)
-        val p = Runtime.getRuntime().exec("dot -T" + format)
-        val pw = new PrintWriter(p.getOutputStream)
-        try {
-          pw.write(decoded)
-        } finally {
-          pw.close()
-        }
-
-        // copy the error (if any)
-        IOUtils.copy(p.getErrorStream, System.err)
-        val bytes = IOUtils.toByteArray(p.getInputStream)
+        val bytes = dotbin(format)(decoded)
         new ComposeResponse(ContentType(contentType) ~> ResponseBytes(bytes))
       }
   }
