@@ -7,7 +7,7 @@ cp target/nlpweb-assembly*jar nlpweb.jar
 
 rc=$?
 if [[ $rc == 0 ]] ; then
-  ./start.sh
+  ./scripts/start.sh
   rc=$?
   if [[ $rc == 0 ]] ; then
     echo "Try it out: http://nlpweb.cs.washington.edu" | mail -s "Automatic Notification: NlpWeb Updated" schmmd@cs.washington.edu

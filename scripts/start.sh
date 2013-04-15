@@ -1,6 +1,6 @@
 #!/bin/bash
 
-startCommand='java -Xms1g -Xmx8g -jar nlpweb.jar --port 8040'
+startCommand='java -Xms1g -Xmx8g -jar nlpweb.jar --port 8040 --remotes remotes.conf'
 
 demoPid=$(<nlpweb.pid)
 if [ $? -eq 0 ]; then
