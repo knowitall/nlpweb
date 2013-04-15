@@ -29,7 +29,7 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
   def loadTool(name: String): T = {
     NlpWeb.remotes.get(name) match {
       case Some(url) =>
-        logger.info("Loading remote " + name + ": " + url)
+        logger.info("Connecting to remote " + name + ": " + url)
         remote(url)
       case None =>
         logger.info("Instantiating " + name)
