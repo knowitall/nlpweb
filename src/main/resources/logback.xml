@@ -15,5 +15,5 @@
     <appender-ref ref="FILE"/>
     <appender-ref ref="STDOUT"/>
   </root>
-  <logger name="edu.washington.cs.knowitall" level="INFO" />
+  <logger name="edu.knowitall" level="INFO" />
 </configuration>
