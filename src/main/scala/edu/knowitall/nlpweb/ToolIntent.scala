@@ -26,24 +26,22 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
   val nameMap = toolNames.toMap
 
   var tools: Map[String, T] = Map.empty[String, T]
-  def loadTool(name: String, instantiate: =>T, remote: URL=>T) = {
-    val tool = NlpWeb.remotes.get(name) match {
+  def loadTool(name: String): T = {
+    NlpWeb.remotes.get(name) match {
       case Some(url) =>
         logger.info("Loading remote " + name + ": " + url)
         remote(url)
       case None =>
         logger.info("Instantiating " + name)
-        instantiate
+        constructors(name)
     }
-
-    tools += name -> tool
   }
   def getTool(name: String): T = tools.get(name) match {
     case Some(tool) => tool
     case None =>
-      val constructed = constructors(name)
-      tools += name -> constructed
-      constructed
+      val loaded = loadTool(name)
+      tools += name -> loaded
+      loaded
   }
 
   def intent = Intent {
