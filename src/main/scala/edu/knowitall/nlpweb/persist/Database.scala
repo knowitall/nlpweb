@@ -62,6 +62,6 @@ object CreateDatabase extends App {
 object Tokens extends TokenSet(true) {
   val selectLogEntry = Token('selectLogEntry, LogEntryExtractor)
   val selectLogEntryById = Token('selectLogEntryById, LogEntryExtractor)
-  val insertLogEntry = Token[Long]('insertLogEntry, BigDecimalConv)
+  val insertLogEntry = Token[java.math.BigDecimal]('insertLogEntry, BigDecimalConv)
   val insertParam = Token[Long]('insertParam, BigDecimalConv)
 }
