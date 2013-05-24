@@ -39,7 +39,7 @@ object CreateDatabase extends App {
       val stmt = conn.createStatement()
       stmt.executeUpdate("DROP TABLE " + tableName)
       conn.commit()
-    } catch { case e => println("Error dropping table: " + tableName) }
+    } catch { case e: Exception => println("Error dropping table: " + tableName) }
   }
 
   val database = if (args.length > 0) args(0) else "nlpdb"

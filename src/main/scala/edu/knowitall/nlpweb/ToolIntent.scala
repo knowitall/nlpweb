@@ -75,7 +75,7 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
         try {
           Some(LogEntry(None, path, tool, params).persist())
         } catch {
-          case e => ToolIntent.logger.error("Could not log request", e); None
+          case e: Exception => ToolIntent.logger.error("Could not log request", e); None
         }
       val text = req.parameterValues("text").headOption.getOrElse("")
       def summarize(length: Int)(text: String) = {
