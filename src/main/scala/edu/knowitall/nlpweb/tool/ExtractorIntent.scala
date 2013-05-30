@@ -28,7 +28,7 @@ extends ToolIntent[Extractor]("extractor",
     case "RelnounExtractor" => extractor.Extractors.Relnoun
     case "NestyExtractor" => extractor.Extractors.Nesty
     case "OllieClearExtractor" => new extractor.Extractors.Ollie("Ollie-clear", ParserIntent.getTool("ClearParser"))
-    case "OllieMaltExtractor" => new extractor.Extractors.Ollie("Ollie-malt", ParserIntent.getTool("ClearParser"))
+    case "OllieMaltExtractor" => new extractor.Extractors.Ollie("Ollie-malt", ParserIntent.getTool("MaltParser"))
     case "SrlExtractor" => extractor.Extractors.Srl.Nary
     case "SrlTripleExtractor" => extractor.Extractors.Srl.Triple
   }
