@@ -1,7 +1,7 @@
 package edu.knowitall.nlpweb.tool.extractor
 
-import edu.knowitall.srl.SrlExtractor
-import edu.knowitall.srl.confidence.SrlConfidenceFunction
+import edu.knowitall.srlie.SrlExtractor
+import edu.knowitall.srlie.confidence.SrlConfidenceFunction
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import edu.knowitall.ollie.confidence.OllieConfidenceFunction
 import edu.knowitall.nlpweb.tool.ParserIntent
@@ -107,7 +107,7 @@ object Extractors {
   }
 
   object Srl {
-    import edu.knowitall.srl._
+    import edu.knowitall.srlie._
 
     lazy val clearParser = ParserIntent.getTool("ClearParser")
     lazy val srlExtractor = new SrlExtractor(SrlIntent.clearSrl)
