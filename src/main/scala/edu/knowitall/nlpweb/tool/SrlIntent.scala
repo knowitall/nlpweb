@@ -13,6 +13,8 @@ import edu.knowitall.tool.srl.RemoteSrl
 import edu.knowitall.tool.parse.DependencyParser
 import edu.knowitall.tool.srl.Srl
 
+import scala.util.control.Exception
+
 case class SrlPackage(frames: Seq[Frame], graph: DependencyGraph)
 abstract class CompleteSrl {
   def apply(sentence: String): SrlPackage
@@ -21,7 +23,10 @@ object CompleteSrl {
   def from(parser: DependencyParser, srl: Srl) = {
     new CompleteSrl {
       override def apply(sentence: String) = {
-        val graph = parser(sentence)
+        val graph = (Exception.catching(classOf[Exception]) opt DependencyGraph.deserialize(sentence)) match {
+          case Some(graph) => graph
+          case None => parser(sentence)
+        }
         SrlPackage(srl(graph), graph)
       }
     }
