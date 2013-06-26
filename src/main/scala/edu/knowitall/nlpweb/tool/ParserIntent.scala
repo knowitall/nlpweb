@@ -117,7 +117,7 @@ extends ToolIntent[DependencyParser]("parser",
     ("parse time: " + Timing.Milliseconds.format(parseTime),
       whatswrongImage(graph) + "<br/><br/>" +
       "<img src=\"data:image/png;base64," + base64Image + "\" /><br>" +
-      "<pre>" + graph.serialize + "\n\n" +
+      "<pre>" + graph.text + "\n\n" + graph.serialize + "\n\n" +
       graph.graph.toString + "\n\n" +
       dot + "</pre>")
   }
