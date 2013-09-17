@@ -103,21 +103,24 @@ extends ToolIntent[DependencyParser]("parser",
       graph = graph.collapseWeakLeaves
     }
 
-    val (nodes, edges) = if ((params.keys contains "pattern") && !params("pattern").isEmpty) {
+    val (matches, (nodes, edges)) = if ((params.keys contains "pattern") && !params("pattern").isEmpty) {
       val pattern = DependencyPattern.deserialize(params("pattern").trim)
       val matches = pattern(graph.graph)
-      (for (m <- matches; v <- m.bipath.nodes) yield v,
-        for (m <- matches; e <- m.bipath.edges) yield e)
+      val nodes = for (m <- matches; v <- m.bipath.nodes) yield v
+      val edges = for (m <- matches; e <- m.bipath.edges) yield e
+      (matches, (nodes, edges))
     }
-    else (List(), List())
+    else (List(), (List(), List()))
 
-    val dot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, Set.empty, Set.empty)
+    val dot = graph.dotWithHighlights(if (text.length > 100) text.substring(0, 100) + "..." else text, nodes.toSet, edges.toSet)
     val base64Image = DotIntent.dotbase64(dot, "png")
 
     ("parse time: " + Timing.Milliseconds.format(parseTime),
       whatswrongImage(graph) + "<br/><br/>" +
       "<img src=\"data:image/png;base64," + base64Image + "\" /><br>" +
-      "<pre>" + graph.text + "\n\n" + graph.serialize + "\n\n" +
+      "<pre>" + matches.map(m => "match with node groups (" + m.nodeGroups.mkString(" ") +
+      ") and edge groups (" + m.edgeGroups.mkString(" ") + ")<br>").mkString("") + "<br>" +
+      graph.text + "\n\n" + graph.serialize + "\n\n" +
       graph.graph.toString + "\n\n" +
       dot + "</pre>")
   }
