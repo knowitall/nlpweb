@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
     nlpwebGroupId %% "nlptools-postag-stanford" % nlpwebVersion,
     nlpwebGroupId %% "nlptools-chunk-opennlp" % nlpwebVersion,
     nlpwebGroupId %% "nlptools-sentence-opennlp" % nlpwebVersion,
-    "edu.washington.cs.knowitall.srlie" %% "srlie" % "1.0.0-RC3",
+    "edu.washington.cs.knowitall.srlie" %% "srlie" % "1.0.0",
     "com.github.scopt" %% "scopt" % "2.1.0",
     "org.apache.commons" % "commons-lang3" % "3.1",
     "ch.qos.logback" % "logback-classic" % "1.0.3",
