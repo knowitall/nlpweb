@@ -26,6 +26,10 @@ object ChunkerIntent extends ToolIntent[Chunker]("chunker", List("opennlp" -> "O
     "<img src=\"data:image/png;base64," + b64.string + "\">"
   }
 
+  def config(pattern: Option[String], collapsed: Boolean, collapseNounGroups: Boolean, collapsePrepOf: Boolean, collapseWeakLeaves: Boolean): String = """
+    patterns: <textarea name="pattern" cols="60" rows="20" value="""" + pattern.getOrElse("") + """" /><br />
+    <br />"""
+
   override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
     val chunker = getTool(nameMap(shortToolName))
 

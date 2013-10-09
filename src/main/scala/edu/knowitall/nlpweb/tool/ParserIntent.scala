@@ -36,6 +36,8 @@ extends ToolIntent[DependencyParser]("parser",
     case "MaltParser" => new MaltParser()
     case "ClearParser" => new ClearParser()
     case "DeserializeParser" => new DependencyParser {
+      override def postagger = throw new UnsupportedOperationException
+      override def dependencyGraphPostagged(tokens: Seq[edu.knowitall.tool.postag.PostaggedToken]) = throw new UnsupportedOperationException
       override def dependencyGraph(pickled: String) =
         DependencyGraph.deserialize(pickled)
 
