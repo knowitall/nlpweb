@@ -40,3 +40,12 @@ libraryDependencies ++= Seq(
     "org.riedelcastro" % "whatswrong" % "0.2.4")
 
 mainClass in assembly := Some("edu.knowitall.nlpweb.NlpWeb")
+
+mergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) =>
+    (xs map {_.toLowerCase}) match {
+      case ("manifest.mf" :: Nil) | ("index.list" :: Nil) | ("dependencies" :: Nil) => MergeStrategy.discard
+      case _ => MergeStrategy.discard
+    }
+  case _ => MergeStrategy.first
+}
