@@ -10,7 +10,7 @@ import edu.knowitall.nlpweb.tool.extractor.Extraction
 import edu.knowitall.nlpweb.tool.extractor.Extractors.Extractor
 
 object ExtractorIntent
-extends ToolIntent[Extractor]("extractor",
+extends ToolIntent[Extractor]("extract",
     List(
         "reverb" -> "ReVerbExtractor",
         "r2a2" -> "R2A2Extractor",

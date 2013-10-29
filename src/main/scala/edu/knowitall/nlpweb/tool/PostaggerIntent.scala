@@ -20,7 +20,7 @@ import visualize.Whatswrong.CanWrite
 import visualize.Whatswrong.writeGraphic2Base64
 
 object PostaggerIntent
-extends ToolIntent[Postagger]("postagger",
+extends ToolIntent[Postagger]("postag",
     List("opennlp" -> "OpenNlpPostagger", "stanford" -> "StanfordPostagger")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
 

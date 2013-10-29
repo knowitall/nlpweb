@@ -8,7 +8,7 @@ import edu.knowitall.tool.segment.Segmenter
 import edu.knowitall.tool.sentence.OpenNlpSentencer
 
 object SentencerIntent
-extends ToolIntent[Segmenter]("sentencer", List("opennlp" -> "OpenNlpSentencer")) {
+extends ToolIntent[Segmenter]("sentence", List("opennlp" -> "OpenNlpSentencer")) {
   override val info = "Enter a single block of text (paragraph) to split into sentences."
 
   def constructors: PartialFunction[String, Segmenter] = {

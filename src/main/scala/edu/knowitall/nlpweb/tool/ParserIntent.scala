@@ -22,7 +22,7 @@ import visualize.Whatswrong.CanWrite
 import visualize.Whatswrong.writeGraphic2Base64
 
 object ParserIntent
-extends ToolIntent[DependencyParser]("parser",
+extends ToolIntent[DependencyParser]("parse",
     List(
       "stanford" -> "StanfordParser",
       "malt" -> "MaltParser",

@@ -13,7 +13,7 @@ import edu.knowitall.tool.chunk.OpenNlpChunker
 import visualize.Whatswrong.Base64String
 import visualize.Whatswrong.writeGraphic2Base64
 
-object ChunkerIntent extends ToolIntent[Chunker]("chunker", List("opennlp" -> "OpenNlpChunker")) {
+object ChunkerIntent extends ToolIntent[Chunker]("chunk", List("opennlp" -> "OpenNlpChunker")) {
   override val info = "Enter sentences to be chunked, one per line."
   lazy val opennlpChunker = new OpenNlpChunker()
 

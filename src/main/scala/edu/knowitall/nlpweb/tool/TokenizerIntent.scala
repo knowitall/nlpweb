@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import edu.knowitall.tool.tokenize.Tokenizer
 
 object TokenizerIntent
-extends ToolIntent[Tokenizer]("tokenizer",
+extends ToolIntent[Tokenizer]("tokenize",
     List("stanford" -> "StanfordTokenizer", "opennlp" -> "OpenNlpTokenizer")) {
   override val info = "Enter sentences to be tokenized, one per line."
 

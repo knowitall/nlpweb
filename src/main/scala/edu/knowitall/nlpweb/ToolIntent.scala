@@ -96,7 +96,7 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
   }
 
   def title[A](req: unfiltered.request.HttpRequest[A]) = req match {
-    case Path(Seg(`path` :: tool :: xs)) => path + " " + tool
+    case Path(Seg(`path` :: tool :: xs)) => "/" + path + "/" + tool
     case _ => "Unknown"
   }
   def config[A](req: unfiltered.request.HttpRequest[A], tool: String) = ""

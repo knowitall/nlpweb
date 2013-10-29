@@ -3,21 +3,21 @@
 -@ val body: String
 - import scala.collection.SortedMap
 
-- 
+-
   var tools: SortedMap[String, List[(String, String)]] = SortedMap()
   tools += ("Chunker" -> List(
-      ("OpenNLP", "/chunker/opennlp")
+      ("OpenNLP", "/chunk/opennlp")
   ))
 
   tools += ("Extraction" -> List(
-      ("SRL", "/extractor/srl"),
-      ("SRL-triples", "/extractor/srl-triple"),
-      ("Ollie-Clear (beta)", "/extractor/ollie-clear"),
-      ("Ollie-Malt", "/extractor/ollie-malt"),
-      ("Nesty", "/extractor/nesty"),
-      ("R2A2", "/extractor/r2a2"),
-      ("Relnoun", "/extractor/relnoun"),
-      ("ReVerb", "/extractor/reverb")
+      ("SRL", "/extract/srl"),
+      ("SRL-triples", "/extract/srl-triple"),
+      ("Ollie-Clear (beta)", "/extract/ollie-clear"),
+      ("Ollie-Malt", "/extract/ollie-malt"),
+      ("Nesty", "/extract/nesty"),
+      ("R2A2", "/extract/r2a2"),
+      ("Relnoun", "/extract/relnoun"),
+      ("ReVerb", "/extract/reverb")
   ))
 
   tools += ("Constituency Parser" -> List(
@@ -26,19 +26,19 @@
   ))
 
   tools += ("Dependency Parser" -> List(
-      ("Stanford", "/parser/stanford"),
-      ("Malt", "/parser/malt"),
-      ("Clear", "/parser/clear"),
-      ("Deserialize", "/parser/deserialize")
+      ("Stanford", "/parse/stanford"),
+      ("Malt", "/parse/malt"),
+      ("Clear", "/parse/clear"),
+      ("Deserialize", "/parse/deserialize")
   ))
 
   tools += ("POS Tagger" -> List(
-      ("OpenNLP", "/postagger/opennlp"),
-      ("Stanford", "/postagger/stanford")
+      ("OpenNLP", "/postag/opennlp"),
+      ("Stanford", "/postag/stanford")
   ))
 
   tools += ("Sentencer" -> List(
-      ("OpenNLP", "/sentencer/opennlp")
+      ("OpenNLP", "/sentence/opennlp")
   ))
 
   tools += ("SRL" -> List(
@@ -46,14 +46,14 @@
   ))
 
   tools += ("Stemmer" -> List(
-      ("Morpha", "/stemmer/morpha"),
-      ("Porter", "/stemmer/porter"),
-      ("English", "/stemmer/english")
+      ("Morpha", "/lemmatize/morpha"),
+      ("Porter", "/lemmatize/porter"),
+      ("English", "/lemmatize/english")
   ))
 
   tools += ("Tokenizer" -> List(
-      ("OpenNLP", "/tokenizer/opennlp"),
-      ("Stanford", "/tokenizer/stanford")
+      ("OpenNLP", "/tokenize/opennlp"),
+      ("Stanford", "/tokenize/stanford")
   ))
 
   tools += ("Other" -> List(
@@ -109,7 +109,7 @@ html
         background-color: white;
         -moz-border-radius: 0px 0px 0px 0px;
       }
-  body 
+  body
     div
       div(style="width: 200px; float: left;")
         - for ((category, tools) <- tools)

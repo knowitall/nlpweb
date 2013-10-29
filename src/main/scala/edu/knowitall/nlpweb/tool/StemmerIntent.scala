@@ -7,7 +7,7 @@ import edu.knowitall.nlpweb.ToolIntent
 import unfiltered.request.HttpRequest
 
 object StemmerIntent
-extends ToolIntent[Stemmer]("stemmer",
+extends ToolIntent[Stemmer]("lemmatize",
     List(
         "morpha" -> "MorphaStemmer",
         "porter" -> "PorterStemmer",
