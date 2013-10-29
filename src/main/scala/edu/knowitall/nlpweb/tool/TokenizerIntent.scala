@@ -10,6 +10,7 @@ import unfiltered.request.HttpRequest
 import edu.knowitall.tool.tokenize.Token
 import java.awt.image.BufferedImage
 import edu.knowitall.tool.tokenize.Tokenizer
+import edu.knowitall.tool.tokenize.RemoteTokenizer
 
 object TokenizerIntent
 extends ToolIntent[Tokenizer]("tokenize",
@@ -20,6 +21,7 @@ extends ToolIntent[Tokenizer]("tokenize",
     case "StanfordTokenizer" => new StanfordTokenizer()
     case "OpenNlpTokenizer" => new OpenNlpTokenizer()
   }
+  override def remote(url: java.net.URL) = new RemoteTokenizer(url.toString)
 
   def image(tokens: Seq[Token]) = {
     import visualize.Whatswrong._

@@ -9,6 +9,7 @@ import edu.knowitall.nlpweb.ToolIntent
 import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.Chunker
+import edu.knowitall.tool.chunk.RemoteChunker
 import edu.knowitall.tool.chunk.OpenNlpChunker
 import visualize.Whatswrong.Base64String
 import visualize.Whatswrong.writeGraphic2Base64
@@ -20,6 +21,8 @@ object ChunkerIntent extends ToolIntent[Chunker]("chunk", List("opennlp" -> "Ope
   def constructors: PartialFunction[String, Chunker] = {
     case "OpenNlpChunker" => new OpenNlpChunker()
   }
+  override def remote(url: java.net.URL) = new RemoteChunker(url.toString)
+
   def image(tokens: Seq[ChunkedToken]) = {
     import visualize.Whatswrong._
     val b64 = implicitly[CanWrite[Seq[ChunkedToken], Base64String]].write(tokens)

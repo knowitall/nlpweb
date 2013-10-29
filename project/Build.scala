@@ -3,7 +3,7 @@ import Keys._
 
 object NlpwebBuild extends Build {
   val nlpwebGroupId = "edu.washington.cs.knowitall.nlptools"
-  val nlpwebVersion = "2.4.3"
+  val nlpwebVersion = "2.4.4-SNAPSHOT"
 
   lazy val root = Project(id = "nlpweb",
                           base = file("."),

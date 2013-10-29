@@ -14,6 +14,7 @@ import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
 import edu.knowitall.tool.postag.OpenNlpPostagger
 import edu.knowitall.tool.postag.PostaggedToken
 import edu.knowitall.tool.postag.Postagger
+import edu.knowitall.tool.postag.RemotePostagger
 import edu.knowitall.tool.postag.StanfordPostagger
 import visualize.Whatswrong.Base64String
 import visualize.Whatswrong.CanWrite
@@ -28,6 +29,7 @@ extends ToolIntent[Postagger]("postag",
     case "OpenNlpPostagger" => new OpenNlpPostagger()
     case "StanfordPostagger" => new StanfordPostagger()
   }
+  override def remote(url: java.net.URL) = new RemotePostagger(url.toString)
 
   def image(tokens: Seq[PostaggedToken]) = {
     import visualize.Whatswrong._

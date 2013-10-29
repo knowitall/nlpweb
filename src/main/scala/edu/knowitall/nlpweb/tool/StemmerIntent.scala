@@ -5,6 +5,7 @@ import scala.Array.canBuildFrom
 import edu.knowitall.tool.stem.{EnglishStemmer, MorphaStemmer, PorterStemmer, Stemmer}
 import edu.knowitall.nlpweb.ToolIntent
 import unfiltered.request.HttpRequest
+import edu.knowitall.tool.stem.RemoteStemmer
 
 object StemmerIntent
 extends ToolIntent[Stemmer]("lemmatize",
@@ -19,6 +20,7 @@ extends ToolIntent[Stemmer]("lemmatize",
     case "PorterStemmer" => new PorterStemmer()
     case "EnglishStemmer" => new EnglishStemmer()
   }
+  override def remote(url: java.net.URL) = new RemoteStemmer(url.toString)
 
   override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
     val stemmer = getTool(nameMap(shortToolName))
