@@ -6,6 +6,7 @@ import common.Timing
 import edu.knowitall.nlpweb.ToolIntent
 import edu.knowitall.tool.segment.Segmenter
 import edu.knowitall.tool.sentence.OpenNlpSentencer
+import edu.knowitall.tool.segment.RemoteSegmenter
 
 object SentencerIntent
 extends ToolIntent[Segmenter]("sentence", List("opennlp" -> "OpenNlpSentencer")) {
@@ -14,6 +15,7 @@ extends ToolIntent[Segmenter]("sentence", List("opennlp" -> "OpenNlpSentencer"))
   def constructors: PartialFunction[String, Segmenter] = {
     case "OpenNlpSentencer" => new OpenNlpSentencer()
   }
+  override def remote(url: java.net.URL) = new RemoteSegmenter(url.toString)
 
   override def post[A](shortToolName: String, text: String, params: Map[String, String]) = {
     val sentencer = getTool(nameMap(shortToolName))
