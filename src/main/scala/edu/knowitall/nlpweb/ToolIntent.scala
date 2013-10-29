@@ -11,6 +11,9 @@ import org.slf4j.Logger
 import java.net.URL
 import org.apache.commons.lang.NotImplementedException
 
+/***
+ * @param toolNames (shortName, longName)
+ */
 abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, String)]) extends BasePage {
   val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -27,12 +30,14 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
 
   var tools: Map[String, T] = Map.empty[String, T]
   def loadTool(name: String): T = {
-    NlpWeb.remotes.get(name) match {
-      case Some(url) =>
-        logger.info("Connecting to remote " + name + ": " + url)
-        remote(url)
-      case None =>
-        logger.info("Instantiating " + name)
+    val shortname = toolNames.find { case (shortname, longname) => longname == name }.map(_._1).get
+    val fullPath = "/" + path + "/" + shortname
+    NlpWeb.remote match {
+      case Some(remote) if remote.paths contains fullPath =>
+        logger.info("Connecting to remote " + fullPath + ": " + remote.url)
+        this.remote(remote.toolUrl(fullPath))
+      case _ =>
+        logger.info("Remote " + fullPath + " not found.  Instantiating: " + name)
         constructors(name)
     }
   }

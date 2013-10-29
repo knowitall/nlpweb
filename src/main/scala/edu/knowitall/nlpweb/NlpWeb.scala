@@ -40,22 +40,22 @@ object NlpWeb extends App with BasePage {
     ConstituencyParserIntent).map(intent => intent.path -> intent).toMap
 
   case class Config(port: Int = 8080,
-    remotesUrl: Option[URL] = None) {
+    remoteUrl: Option[URL] = None) {
 
-    def loadRemotes(): Map[String, URL] = {
-      remotesUrl match {
-        case None => Map.empty
-        case Some(remotesUrl) =>
-          Resource.using(remotesUrl.openStream) { stream =>
-            Source.fromInputStream(stream).getLines.filter(!_.trim.isEmpty).map { line =>
-              val (name, url) = line.split("\t") match {
-                case Array(name, url) => (name, new URL(url))
-                case _ => throw new MatchError("Could not parse line: " + line)
-              }
-              logger.info("Remote configuration: '" + name + "' at '" + url + "'")
-              (name, url)
-            }.toMap
+    def loadRemotes(): Option[RemoteServer] = {
+      remoteUrl match {
+        case None => None
+        case Some(serverUrl) =>
+          val indexUrl = new URL(serverUrl, "plaintext")
+          val paths = Resource.using(indexUrl.openStream) { stream =>
+            Source.fromInputStream(stream).getLines.map { path => 
+              val trimmed = path.trim
+              if (trimmed endsWith "/") trimmed.dropRight(1)
+              else trimmed
+            }.filter(!_.isEmpty).toSet
           }
+          
+          Some(RemoteServer(serverUrl, paths))
       }
     }
   }
@@ -65,13 +65,9 @@ object NlpWeb extends App with BasePage {
       intOpt("p", "port", "output file (otherwise stdout)") { (port: Int, config: Config) =>
         config.copy(port = port)
       },
-      opt("r", "remotes", "remotes file") { (address: String, config: Config) =>
-        val url =
-          scala.util.control.Exception.catching(classOf[MalformedURLException]) opt new URL(address) match {
-            case Some(url) => url
-            case None => new File(address).toURI.toURL
-          }
-        config.copy(remotesUrl = Some(url))
+      opt("r", "remote", "nlptools server") { (address: String, config: Config) =>
+        val url = new URL(address)
+        config.copy(remoteUrl=Some(url))
       })
   }
 
@@ -80,14 +76,18 @@ object NlpWeb extends App with BasePage {
     case None =>
   }
 
-  var remotes: Map[String, URL] = _
+  case class RemoteServer(url: URL, paths: Set[String]) {
+    def contains(basePath: String, name: String) = paths contains ("/" + basePath + "/" + name)
+    def toolUrl(path: String) = new URL(url, path)
+  }
+  final var remote: Option[RemoteServer] = _
 
   def run(config: Config) = {
     def first = Intent {
       case req @ GET(Path("/")) => HtmlContent ~> Scalate(req, "/templates/main.jade")
     }
 
-    remotes = config.loadRemotes()
+    remote = config.loadRemotes()
 
     def logIntent = Intent {
       case req @ GET(Path(Seg("log" :: number :: Nil))) =>
@@ -111,7 +111,7 @@ object NlpWeb extends App with BasePage {
 
     val intent = tools.values.map(_.intent).reduce(_ orElse _) orElse DotIntent.intent orElse logIntent orElse first
 
-    val plan = new unfiltered.filter.Planify(intent)
+    val plan = unfiltered.filter.Planify(intent)
 
     println("starting...")
     try {
