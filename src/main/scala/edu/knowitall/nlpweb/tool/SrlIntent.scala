@@ -4,8 +4,6 @@ package tool
 
 import common.Timing
 import unfiltered.request.HttpRequest
-import edu.knowitall.tool.sentence.OpenNlpSentencer
-import edu.knowitall.tool.srl.ClearSrl
 import edu.knowitall.tool.srl.Frame
 import edu.knowitall.tool.srl.FrameHierarchy
 import edu.knowitall.tool.parse.graph.DependencyGraph
@@ -38,12 +36,22 @@ extends ToolIntent[CompleteSrl]("srl", List("clear" -> "ClearSrl")) {
 
   override val info = "Enter a sentence text to be SRL-ed."
 
-  lazy val clearSrl = new ClearSrl()
-  def constructors: PartialFunction[String, CompleteSrl] = {
+  val clearSrl = NlpWeb.remote.flatMap { remote =>
+    if (remote.paths contains "/clear/srl") {
+      Some(new RemoteSrl(remote.toolUrl("/clear/srl").toString))
+    }
+    else {
+      None
+    }
+  }
+
+  // lazy val clearSrl = new ClearSrl()
+  def constructors= PartialFunction.empty[String, CompleteSrl] /* = {
     case "ClearSrl" =>
       val clearParser = ParserIntent.getTool("ClearParser")
       CompleteSrl.from(clearParser, clearSrl)
   }
+  */
   override def remote(url: java.net.URL) = {
     val clearParser = ParserIntent.getTool("ClearParser")
     val srl = new RemoteSrl(url.toString)

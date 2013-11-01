@@ -11,11 +11,9 @@ import org.apache.commons.lang.NotImplementedException
 import common.Timing
 import edu.knowitall.nlpweb.ToolIntent
 import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
-import edu.knowitall.tool.postag.OpenNlpPostagger
 import edu.knowitall.tool.postag.PostaggedToken
 import edu.knowitall.tool.postag.Postagger
 import edu.knowitall.tool.postag.RemotePostagger
-import edu.knowitall.tool.postag.StanfordPostagger
 import visualize.Whatswrong.Base64String
 import visualize.Whatswrong.CanWrite
 import visualize.Whatswrong.writeGraphic2Base64
@@ -25,10 +23,11 @@ extends ToolIntent[Postagger]("postag",
     List("opennlp" -> "OpenNlpPostagger", "stanford" -> "StanfordPostagger")) {
   override val info = "Enter sentences to be part-of-speech tagged, one per line."
 
-  def constructors: PartialFunction[String, Postagger] = {
+  def constructors = PartialFunction.empty[String, Postagger] /* = {
     case "OpenNlpPostagger" => new OpenNlpPostagger()
     case "StanfordPostagger" => new StanfordPostagger()
   }
+  */
   override def remote(url: java.net.URL) = new RemotePostagger(url.toString)
 
   def image(tokens: Seq[PostaggedToken]) = {

@@ -9,7 +9,6 @@ import edu.knowitall.tool.tokenize.Token
 import javax.imageio.ImageIO
 import edu.knowitall.tool.parse.graph.DependencyGraph
 import edu.knowitall.tool.parse.graph.DependencyNode
-import edu.knowitall.tool.parse.MaltParser
 import java.io.ByteArrayOutputStream
 import java.util.prefs.Base64
 import org.apache.commons.codec.binary.Base64OutputStream

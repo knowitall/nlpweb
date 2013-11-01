@@ -2,11 +2,10 @@ package edu.knowitall
 package nlpweb
 package tool
 
+/*
 import common.Timing
 import edu.knowitall.nlpweb.ToolIntent
 import edu.knowitall.tool.parse.ConstituencyParser
-import edu.knowitall.tool.parse.OpenNlpParser
-import edu.knowitall.tool.parse.StanfordParser
 
 object ConstituencyParserIntent
 extends ToolIntent[ConstituencyParser]("constituency",
@@ -34,3 +33,4 @@ extends ToolIntent[ConstituencyParser]("constituency",
      "<img src=\"data:image/png;base64," + base64Image + "\" />")
   }
 }
+*/

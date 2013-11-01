@@ -10,17 +10,15 @@ import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.tool.chunk.Chunker
 import edu.knowitall.tool.chunk.RemoteChunker
-import edu.knowitall.tool.chunk.OpenNlpChunker
 import visualize.Whatswrong.Base64String
 import visualize.Whatswrong.writeGraphic2Base64
 
 object ChunkerIntent extends ToolIntent[Chunker]("chunk", List("opennlp" -> "OpenNlpChunker")) {
   override val info = "Enter sentences to be chunked, one per line."
-  lazy val opennlpChunker = new OpenNlpChunker()
 
-  def constructors: PartialFunction[String, Chunker] = {
+  def constructors = PartialFunction.empty[String, Chunker] /* = {
     case "OpenNlpChunker" => new OpenNlpChunker()
-  }
+  }*/
   override def remote(url: java.net.URL) = new RemoteChunker(url.toString)
 
   def image(tokens: Seq[ChunkedToken]) = {

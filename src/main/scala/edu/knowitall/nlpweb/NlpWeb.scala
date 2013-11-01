@@ -2,7 +2,6 @@ package edu.knowitall.nlpweb
 
 import edu.knowitall.nlpweb.persist.Database
 import edu.knowitall.nlpweb.tool.ChunkerIntent
-import edu.knowitall.nlpweb.tool.ConstituencyParserIntent
 import edu.knowitall.nlpweb.tool.ExtractorIntent
 import edu.knowitall.nlpweb.tool.ParserIntent
 import edu.knowitall.nlpweb.tool.PostaggerIntent
@@ -28,7 +27,8 @@ import org.slf4j.LoggerFactory
 
 object NlpWeb extends App with BasePage {
   val logger = LoggerFactory.getLogger(NlpWeb.getClass)
-  val tools: Map[String, ToolIntent[_]] = Iterable[ToolIntent[_]](
+
+  lazy val tools: Map[String, ToolIntent[_]] = Iterable[ToolIntent[_]](
     StemmerIntent,
     TokenizerIntent,
     PostaggerIntent,
@@ -36,8 +36,7 @@ object NlpWeb extends App with BasePage {
     ParserIntent,
     SentencerIntent,
     ExtractorIntent,
-    SrlIntent,
-    ConstituencyParserIntent).map(intent => intent.path -> intent).toMap
+    SrlIntent).map(intent => intent.path -> intent).toMap
 
   case class Config(port: Int = 8080,
     remoteUrl: Option[URL] = None) {
@@ -80,7 +79,8 @@ object NlpWeb extends App with BasePage {
     def contains(basePath: String, name: String) = paths contains ("/" + basePath + "/" + name)
     def toolUrl(path: String) = new URL(url, path)
   }
-  final var remote: Option[RemoteServer] = _
+
+  final var remote: Option[RemoteServer] = None
 
   def run(config: Config) = {
     def first = Intent {
@@ -123,4 +123,3 @@ object NlpWeb extends App with BasePage {
     }
   }
 }
-

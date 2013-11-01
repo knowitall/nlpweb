@@ -17,10 +17,6 @@ import org.apache.commons.lang.NotImplementedException
 abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, String)]) extends BasePage {
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  for ((short, long) <- toolNames) {
-    require(constructors.isDefinedAt(long), "No constructor for: " + long)
-  }
-
   def constructors: PartialFunction[String, T]
   def remote(url: URL): T = throw new NotImplementedException("No remote implementation for: " + url)
 

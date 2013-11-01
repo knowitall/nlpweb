@@ -16,8 +16,6 @@ extends ToolIntent[Extractor]("extract",
         "r2a2" -> "R2A2Extractor",
         "relnoun" -> "RelnounExtractor",
         "nesty" -> "NestyExtractor",
-        "ollie-clear" -> "OllieClearExtractor",
-        "ollie-malt" -> "OllieMaltExtractor",
         "srl" -> "SrlExtractor",
         "srl-triple" -> "SrlTripleExtractor")) {
   override val info = "Enter sentences from which to extract relations, one per line."
@@ -27,8 +25,6 @@ extends ToolIntent[Extractor]("extract",
     case "R2A2Extractor" => extractor.Extractors.R2A2
     case "RelnounExtractor" => extractor.Extractors.Relnoun
     case "NestyExtractor" => extractor.Extractors.Nesty
-    case "OllieClearExtractor" => new extractor.Extractors.Ollie("Ollie-clear", ParserIntent.getTool("ClearParser"))
-    case "OllieMaltExtractor" => new extractor.Extractors.Ollie("Ollie-malt", ParserIntent.getTool("MaltParser"))
     case "SrlExtractor" => extractor.Extractors.Srl.Nary
     case "SrlTripleExtractor" => extractor.Extractors.Srl.Triple
   }

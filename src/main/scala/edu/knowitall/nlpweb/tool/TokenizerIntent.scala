@@ -4,8 +4,6 @@ package tool
 
 import scala.Array.canBuildFrom
 import common.Timing
-import edu.knowitall.tool.tokenize.StanfordTokenizer
-import edu.knowitall.tool.tokenize.OpenNlpTokenizer
 import unfiltered.request.HttpRequest
 import edu.knowitall.tool.tokenize.Token
 import java.awt.image.BufferedImage
@@ -17,10 +15,12 @@ extends ToolIntent[Tokenizer]("tokenize",
     List("stanford" -> "StanfordTokenizer", "opennlp" -> "OpenNlpTokenizer")) {
   override val info = "Enter sentences to be tokenized, one per line."
 
-  def constructors: PartialFunction[String, Tokenizer] = {
+  def constructors = PartialFunction.empty[String, Tokenizer] /* = {
     case "StanfordTokenizer" => new StanfordTokenizer()
     case "OpenNlpTokenizer" => new OpenNlpTokenizer()
   }
+  */
+
   override def remote(url: java.net.URL) = new RemoteTokenizer(url.toString)
 
   def image(tokens: Seq[Token]) = {

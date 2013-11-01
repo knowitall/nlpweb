@@ -9,11 +9,8 @@ import common.Timing
 import edu.knowitall.nlpweb.DotIntent
 import edu.knowitall.nlpweb.ToolIntent
 import edu.knowitall.nlpweb.visualize.Whatswrong.CanWrite
-import edu.knowitall.tool.parse.ClearParser
 import edu.knowitall.tool.parse.DependencyParser
-import edu.knowitall.tool.parse.MaltParser
 import edu.knowitall.tool.parse.RemoteDependencyParser
-import edu.knowitall.tool.parse.StanfordParser
 import edu.knowitall.tool.parse.graph.DependencyGraph
 import edu.knowitall.tool.parse.graph.DependencyPattern
 import edu.knowitall.tool.stem.MorphaStemmer
@@ -32,9 +29,9 @@ extends ToolIntent[DependencyParser]("parse",
   override val info = "Enter a single sentence to be parsed."
 
   def constructors: PartialFunction[String, DependencyParser] = {
-    case "StanfordParser" => new StanfordParser()
-    case "MaltParser" => new MaltParser()
-    case "ClearParser" => new ClearParser()
+    // case "StanfordParser" => new StanfordParser()
+    // case "MaltParser" => new MaltParser()
+    // case "ClearParser" => new ClearParser()
     case "DeserializeParser" => new DependencyParser {
       override def postagger = throw new UnsupportedOperationException
       override def dependencyGraphPostagged(tokens: Seq[edu.knowitall.tool.postag.PostaggedToken]) = throw new UnsupportedOperationException

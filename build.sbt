@@ -5,7 +5,7 @@ name := "nlpweb"
 
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.10.1"
+scalaVersion := "2.10.3"
 
 resolvers ++= Seq("oss snapshot" at "http://oss.sonatype.org/content/repositories/snapshots/")
 
@@ -14,21 +14,10 @@ libraryDependencies ++= Seq(
     "net.databinder" %% "unfiltered-scalate" % "0.6.8",
     "net.databinder" %% "unfiltered-filter" % "0.6.8",
     "net.databinder" %% "unfiltered-jetty" % "0.6.8",
-    "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.6",
-    "edu.washington.cs.knowitall.ollie" %% "ollie-core" % "1.0.3",
+    "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.7",
     nlpwebGroupId %% "nlptools-core" % nlpwebVersion,
     nlpwebGroupId %% "nlptools-stem-morpha" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-stem-snowball" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-parse-stanford" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-parse-malt" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-parse-opennlp" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-tokenize-stanford" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-tokenize-opennlp" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-postag-opennlp" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-postag-stanford" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-chunk-opennlp" % nlpwebVersion,
-    nlpwebGroupId %% "nlptools-sentence-opennlp" % nlpwebVersion,
-    "edu.washington.cs.knowitall.srlie" %% "srlie" % "1.0.1",
+    "edu.washington.cs.knowitall.srlie" %% "srlie" % "1.0.2",
     "com.github.scopt" %% "scopt" % "2.1.0",
     "org.apache.commons" % "commons-lang3" % "3.1",
     "ch.qos.logback" % "logback-classic" % "1.0.13",
@@ -38,6 +27,8 @@ libraryDependencies ++= Seq(
     "org.orbroker" %% "orbroker" % "3.2.1-1",
     "org.apache.derby" % "derby" % "10.10.1.1",
     "org.riedelcastro" % "whatswrong" % "0.2.4")
+
+licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 mainClass in assembly := Some("edu.knowitall.nlpweb.NlpWeb")
 

@@ -3,7 +3,6 @@ package edu.knowitall.nlpweb.tool.extractor
 import edu.knowitall.srlie.SrlExtractor
 import edu.knowitall.srlie.confidence.SrlConfidenceFunction
 import edu.knowitall.tool.chunk.OpenNlpChunker
-import edu.knowitall.ollie.confidence.OllieConfidenceFunction
 import edu.knowitall.nlpweb.tool.ParserIntent
 import edu.knowitall.tool.chunk.ChunkedToken
 import edu.knowitall.chunkedextractor.ReVerb
@@ -19,27 +18,6 @@ object Extractors {
   abstract class Extractor(val name: String) {
     def extract(sentence: String): Seq[Extraction]
     def apply(sentence: String) = extract(sentence)
-  }
-
-  class Ollie(name: String, parser: DependencyParser) extends Extractor(name) {
-    import edu.knowitall.openparse.extract.Extraction.{ Part => OlliePart }
-    import edu.knowitall.ollie._
-
-    lazy val ollie = new edu.knowitall.ollie.Ollie()
-    lazy val ollieConf = OllieConfidenceFunction.loadDefaultClassifier()
-
-    def olliePart(extrPart: OlliePart) = Part.create(extrPart.text, extrPart.nodes.map(_.indices))
-    def ollieContextPart(extrPart: Context) = {
-      Part.create(extrPart.text, Iterable(extrPart.interval))
-    }
-
-    def extract(sentence: String): Seq[Extraction] = {
-      val dgraph = parser(sentence)
-      val rawOllieExtrs = ollie.extract(dgraph).map { extr => (ollieConf(extr), extr) }.toSeq.sortBy(-_._1)
-      rawOllieExtrs.map(_._2).map { extr =>
-        Extraction.fromTriple(name, extr.extr.enabler.orElse(extr.extr.attribution) map ollieContextPart, olliePart(extr.extr.arg1), olliePart(extr.extr.rel), olliePart(extr.extr.arg2), ollieConf(extr))
-      }
-    }
   }
 
   object ReVerb extends Extractor("ReVerb") {
@@ -110,7 +88,7 @@ object Extractors {
     import edu.knowitall.srlie._
 
     lazy val clearParser = ParserIntent.getTool("ClearParser")
-    lazy val srlExtractor = new SrlExtractor(SrlIntent.clearSrl)
+    lazy val srlExtractor = new SrlExtractor(SrlIntent.clearSrl.getOrElse(throw new UnsupportedOperationException("No remote for /clear/srl.")))
     lazy val srlConf = SrlConfidenceFunction.loadDefaultClassifier()
 
     def convert(inst: SrlExtractionInstance): Extraction = {
