@@ -2,8 +2,8 @@ import sbt._
 import Keys._
 
 object NlpwebBuild extends Build {
-  val nlpwebGroupId = "edu.washington.cs.knowitall.nlptools"
-  val nlpwebVersion = "2.4.4-SNAPSHOT"
+  val nlptoolsGroupId = "edu.washington.cs.knowitall.nlptools"
+  val nlptoolsVersion = "2.4.5-SNAPSHOT"
 
   lazy val root = Project(id = "nlpweb",
                           base = file("."),
