@@ -13,7 +13,6 @@ object ExtractorIntent
 extends ToolIntent[Extractor]("extract",
     List(
         "reverb" -> "ReVerbExtractor",
-        "r2a2" -> "R2A2Extractor",
         "relnoun" -> "RelnounExtractor",
         "nesty" -> "NestyExtractor",
         "srl" -> "SrlExtractor",
@@ -22,7 +21,6 @@ extends ToolIntent[Extractor]("extract",
 
   def constructors: PartialFunction[String, Extractor] = {
     case "ReVerbExtractor" => extractor.Extractors.ReVerb
-    case "R2A2Extractor" => extractor.Extractors.R2A2
     case "RelnounExtractor" => extractor.Extractors.Relnoun
     case "NestyExtractor" => extractor.Extractors.Nesty
     case "SrlExtractor" => extractor.Extractors.Srl.Nary
