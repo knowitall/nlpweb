@@ -34,7 +34,8 @@ abstract class ToolIntent[T](val path: String, val toolNames: Seq[(String, Strin
         this.remote(remote.toolUrl(fullPath))
       case _ =>
         logger.info("Remote " + fullPath + " not found.  Instantiating: " + name)
-        constructors(name)
+        val fail: PartialFunction[String, T] = { case constructor => throw new MatchError("Could not find constructor: " + constructor) }
+        constructors.orElse(fail)(name)
     }
   }
   def getTool(name: String): T = tools.get(name) match {

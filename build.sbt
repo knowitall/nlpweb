@@ -17,6 +17,7 @@ libraryDependencies ++= Seq(
     "edu.washington.cs.knowitall.chunkedextractor" %% "chunkedextractor" % "1.0.8-SNAPSHOT",
     nlptoolsGroupId %% "nlptools-core" % nlptoolsVersion,
     nlptoolsGroupId %% "nlptools-stem-morpha" % nlptoolsVersion,
+    nlptoolsGroupId %% "nlptools-stem-snowball" % nlptoolsVersion,
     "edu.washington.cs.knowitall.srlie" %% "srlie" % "1.0.2",
     "com.github.scopt" %% "scopt" % "2.1.0",
     "org.apache.commons" % "commons-lang3" % "3.1",

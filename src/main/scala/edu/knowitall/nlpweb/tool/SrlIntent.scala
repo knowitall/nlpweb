@@ -37,8 +37,8 @@ extends ToolIntent[CompleteSrl]("srl", List("clear" -> "ClearSrl")) {
   override val info = "Enter a sentence text to be SRL-ed."
 
   val clearSrl = NlpWeb.remote.flatMap { remote =>
-    if (remote.paths contains "/clear/srl") {
-      Some(new RemoteSrl(remote.toolUrl("/clear/srl").toString))
+    if (remote.paths contains "/srl/clear") {
+      Some(new RemoteSrl(remote.toolUrl("/srl/clear").toString))
     }
     else {
       None

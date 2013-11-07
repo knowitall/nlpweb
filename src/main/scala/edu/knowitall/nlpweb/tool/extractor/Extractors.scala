@@ -96,14 +96,14 @@ object Extractors {
       val arg2s: Map[Class[_], Seq[SrlExtraction.Argument]] = inst.extr.arg2s.groupBy(_.getClass)
       val conf = srlConf(inst)
 
-      val vanillaArg2s = arg2s.getOrElse(classOf[SrlExtraction.Argument], Seq.empty)
+      val vanillaArg2s = arg2s.getOrElse(classOf[SrlExtraction.SimpleArgument], Seq.empty)
       val vanillaArg2Parts = vanillaArg2s.map { arg2 =>
         Part.create(arg2.text, Seq(arg2.interval))
       }
 
       val semanticArg2Parts: Seq[SemanticPart] = arg2s.filter {
         case (key, value) =>
-          key != classOf[SrlExtraction.Argument]
+          key != classOf[SrlExtraction.SimpleArgument]
       }.flatMap {
         case (key, values) =>
           values.map { value =>
